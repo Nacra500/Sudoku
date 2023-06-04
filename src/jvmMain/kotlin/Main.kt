@@ -20,7 +20,7 @@ fun App(navigation: MutableStateFlow<Int>, menuViewModel: MenuViewModel, gameVie
     }
 }
 fun main(){
-    val navigation = MutableStateFlow(Screens.GAME.ordinal)
+    val navigation = MutableStateFlow(Screens.MENU.ordinal)
     val menuViewModel = MenuViewModel(navigation)
     val gameViewMode = GameViewModel(navigation)
     application {

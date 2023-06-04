@@ -11,11 +11,12 @@ class GameViewModel(var di: MutableStateFlow<Int>) {
     private var _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
-    private val engine = GameEngine()
+    private lateinit var engine: GameEngine
 
     fun loadGame() {
+        engine = GameEngine(4)
         _uiState.update { currentState ->
-            currentState.copy(field = engine.setupGame())
+            currentState.copy(field = engine.createSolvable())
         }
     }
 
@@ -25,6 +26,6 @@ class GameViewModel(var di: MutableStateFlow<Int>) {
 }
 
 data class GameUiState(
-    var field: List<List<Int>> = emptyList(),
+    var field: Array<Array<Int>> = emptyArray<Array<Int>>(),
     var endGame: Boolean = false
 )

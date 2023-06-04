@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Preview
 fun GameView(vm: GameViewModel) {
     val gameUiState by vm.uiState.collectAsState()
+    vm.loadGame()
 
     val modifier: Modifier = Modifier.padding(1.dp)
 
@@ -28,6 +29,14 @@ fun GameView(vm: GameViewModel) {
             }) {
                 Text("EndGame")
             }
+            var a = ""
+            for (i in gameUiState.field){
+                for (ii in i){
+                    a+=ii
+                }
+                a+="\n"
+            }
+            Text(a)
         }
     }
 }
