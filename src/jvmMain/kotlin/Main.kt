@@ -1,31 +1,36 @@
-import androidx.compose.material.MaterialTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.flow.MutableStateFlow
+import view.game.GameView
+import view.game.GameViewModel
+import view.menu.MenuView
+import view.menu.MenuViewModel
 
 @Composable
 @Preview
-fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-
-    MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
+fun App(navigation: MutableStateFlow<Int>, menuViewModel: MenuViewModel, gameViewMode: GameViewModel) {
+    val navState = navigation.collectAsState()
+    if(navState.value == Screens.GAME.ordinal){
+        GameView(gameViewMode)
+    }else{
+        MenuView(menuViewModel)
+    }
+}
+fun main(){
+    val navigation = MutableStateFlow(Screens.GAME.ordinal)
+    val menuViewModel = MenuViewModel(navigation)
+    val gameViewMode = GameViewModel(navigation)
+    application {
+        Window(onCloseRequest = ::exitApplication) {
+            App(navigation, menuViewModel, gameViewMode)
         }
     }
 }
 
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
-        App()
-    }
+object NavController{
+
 }
+enum class Screens{MENU, GAME}
