@@ -19,6 +19,7 @@ fun App(navigation: MutableStateFlow<Int>, menuViewModel: MenuViewModel, gameVie
         MenuView(menuViewModel)
     }
 }
+//iwas lustiges
 //hallo alex
 fun main(){
     val navigation = MutableStateFlow(Screens.MENU.ordinal)
