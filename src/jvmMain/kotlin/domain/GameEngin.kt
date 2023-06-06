@@ -89,7 +89,7 @@ internal class GameEngine(private val boxPerColLin: Int) {
     private fun analyzeField() {
         for (y in 0 until colLin) {
             for (x in 0 until colLin) {
-                for (i in 1..9) {
+                for (i in 1 until 9) {
                     if (field[y][x] == -1) {
                         if (checkValidInput(x, y, i)) {
                             possibles[y][x][i] = i

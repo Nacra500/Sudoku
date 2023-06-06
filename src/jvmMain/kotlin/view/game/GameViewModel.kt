@@ -14,7 +14,7 @@ class GameViewModel(var di: MutableStateFlow<Int>) {
     private lateinit var engine: GameEngine
 
     fun loadGame() {
-        engine = GameEngine(4)
+        engine = GameEngine(3)
         _uiState.update { currentState ->
             currentState.copy(field = engine.createSolvable())
         }

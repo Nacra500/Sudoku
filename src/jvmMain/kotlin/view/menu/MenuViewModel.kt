@@ -10,18 +10,79 @@ class MenuViewModel(var di: MutableStateFlow<Int>) {
     private var _uiState = MutableStateFlow(MenuUiState())
     val uiState: StateFlow<MenuUiState> = _uiState.asStateFlow()
 
-    fun updateXP(){
+    init {
+        updateButton()
+    }
+
+    fun updateXP(diff: Int) {
         _uiState.update { currentState ->
-            currentState.copy(xp = _uiState.value.xp + 1)
+            currentState.copy(xp = _uiState.value.xp + diff)
         }
     }
 
+
     fun startGame() {
         di.value = Screens.GAME.ordinal
+    }
+
+    fun updateSize(gameMode: GameMode, i: SIZES) {
+        val newState = _uiState.value.copy()
+        newState.gameModes.find { it.name == gameMode.name }?.options?.size?.selected = i
+        _uiState.update { currentState ->
+            currentState.copy(gameModes = newState.gameModes, render = !newState.render)
+        }
+        updateGameMode(gameMode)
+    }
+
+    fun updateDifficult(gameMode: GameMode, i: DIFFICULT) {
+        val newState = _uiState.value.copy()
+        newState.gameModes.find { it.name == gameMode.name }?.options?.difficult?.selected = i
+        _uiState.update { currentState ->
+            currentState.copy(gameModes = newState.gameModes, render = !newState.render)
+        }
+        updateGameMode(gameMode)
+    }
+
+    fun updateGameMode(gameMode: GameMode) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedMode = gameMode)
+        }
+        updateButton()
+    }
+
+    fun buttonPressed(points: Int) {
+        if (points > 0) {
+            startGame()
+        } else if (-points <= _uiState.value.xp) {
+            updateXP(points)
+            val newState = _uiState.value.copy()
+            newState.gameModes.find { it.name == _uiState.value.selectedMode.name }?.apply {
+                if(!this.available){
+                    this.available = true
+                }else{
+                    this.options.difficult.available = this.options.difficult.selected
+                    this.options.size.available = this.options.size.selected
+                }
+            }
+            _uiState.update { currentState ->
+                currentState.copy(gameModes = newState.gameModes, render = !newState.render)
+            }
+        }
+        updateButton()
+    }
+
+    fun updateButton(){
+        _uiState.update { currentState ->
+            currentState.copy(buttonState = _uiState.value.selectedMode.costs)
+        }
     }
 }
 
 data class MenuUiState(
     var xp: Int = 0,
-    var startGame: Boolean = false
+    var gameModes: List<GameMode> = listOf(Mode1, Mode2, Mode3),
+    var selectedMode: GameMode = Mode1,
+    var startGame: Boolean = false,
+    val render: Boolean = false,
+    val buttonState: Int = 0
 )
