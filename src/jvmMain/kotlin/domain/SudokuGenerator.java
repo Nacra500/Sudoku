@@ -12,16 +12,20 @@ public class SudokuGenerator{
         this.boxPerColLin = boxPerColLin;
         this.colLin = boxPerColLin * boxPerColLin;
         field = new Integer[colLin][colLin];
-        //generate();
+
+        create_start();
+        generate();
+    }
+
+    private void create_start() {
         for (Integer[] line: field){
             Arrays.fill(line, 0);
         }
+
         List<Integer> entries = IntStream.rangeClosed(1,colLin).boxed().collect(Collectors.toList());
         Collections.shuffle(entries);
 
         field[0] = entries.toArray(new Integer[0]);
-
-        generate();
     }
 
     private void generate(){
@@ -29,17 +33,10 @@ public class SudokuGenerator{
         boolean solvable = false;
 
         while (!solvable) {
-            for (Integer[] line: field){
-                Arrays.fill(line, 0);
-            }
-
             solvable = true;
             int numOfProblems = -colLin +1;
 
-            List<Integer> entries = IntStream.rangeClosed(1,colLin).boxed().collect(Collectors.toList());
-            Collections.shuffle(entries);
-
-            field[0] = entries.toArray(new Integer[0]);
+            create_start();
 
             lineFor: for (int i_y = 1; i_y < colLin; i_y++) {
 
@@ -66,10 +63,9 @@ public class SudokuGenerator{
                 }
             }
         }
-        System.out.println("tries: "+tries);
     }
 
-    private boolean solve(){
+ /*   private boolean solve(){
             List<Integer> entries = Arrays.asList(1,2,3,4,5,6,7,8,9);
 
             for (int i_y = 1; i_y < colLin; i_y++) {
@@ -91,8 +87,9 @@ public class SudokuGenerator{
                 }
             return true;
     }
-
+*/
     private boolean checkValidInput(int x, int y, Integer val){
+        if (field[y][x].equals(val)) return true
         return checkBox(x,y,val) && checkLine(y, val) && checkColumn(x, val);
     }
 
