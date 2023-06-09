@@ -1,6 +1,11 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.awt.awtEventOrNull
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.KeyEventType.Companion.KeyDown
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +28,19 @@ fun App(navigation: MutableStateFlow<Int>, menuViewModel: MenuViewModel, gameVie
 fun main(){
     val navigation = MutableStateFlow(Screens.MENU.ordinal)
     val menuViewModel = MenuViewModel(navigation)
-    val gameViewMode = GameViewModel(navigation)
+    val gameViewModel = GameViewModel(navigation)
     application {
-        Window(onCloseRequest = ::exitApplication) {
-            App(navigation, menuViewModel, gameViewMode)
+        Window(onCloseRequest = ::exitApplication,
+            onKeyEvent = {
+                if(it.type == KeyDown){
+                    it.awtEventOrNull?.let { key ->
+                        gameViewModel.keyEvent(key.keyCode)
+                    }
+                }
+                true
+            }
+        ) {
+            App(navigation, menuViewModel, gameViewModel)
         }
     }
 }
