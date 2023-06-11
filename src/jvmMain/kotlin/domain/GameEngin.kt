@@ -15,7 +15,7 @@ internal class GameEngine(private val boxPerColLin: Int) {
         for (i in 0 until colLin) {
             for (j in 0 until colLin) {
                 for (j2 in 0 until colLin) {
-                    possibles[i][j][j2] = -1
+                    possibles[i][j][j2] = 0
                 }
             }
         }
@@ -36,7 +36,7 @@ internal class GameEngine(private val boxPerColLin: Int) {
             x = createRandom()
             y = createRandom()
             r++
-            if (field[y][x] != -1) {
+            if (field[y][x] != 0) {
                 val j = field[y][x]
                 removeNumber(x, y)
                 println("c: $c t: $t r: $r")
@@ -67,21 +67,21 @@ internal class GameEngine(private val boxPerColLin: Int) {
     }
 
     private fun removeNumber(x: Int, y: Int) {
-        field[y][x] = -1
+        field[y][x] = 0
     }
 
     /*
     public void generatePossibleValuesArray() {
     for (int y = 0; y < colLin; y++) {
         for (int x = 0; x < colLin;x++) {
-    //              if (field[y][x] == -1) {
+    //              if (field[y][x] == 0) {
                 possibles[y][x].add(10);
     //              }
         }
     }
     }
     public void generatePossibleValuesArray(int x, int y) {
-            if (field[y][x] == -1) {
+            if (field[y][x] == 0) {
                 possibles[y]= new ArrayList<Integer>();
             }
     }
@@ -90,7 +90,7 @@ internal class GameEngine(private val boxPerColLin: Int) {
         for (y in 0 until colLin) {
             for (x in 0 until colLin) {
                 for (i in 1 until 9) {
-                    if (field[y][x] == -1) {
+                    if (field[y][x] == 0) {
                         if (checkValidInput(x, y, i)) {
                             possibles[y][x][i] = i
                         }
