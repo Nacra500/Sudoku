@@ -23,370 +23,288 @@ public class SudokuGenerator {
 
 
 
+	private void printSolution() {
+		for (int i = 0; i < sp.size(); i++) {
+			System.out.println(sp.get(i));
+		}
+	}
+	
+	public Integer [] randomHint() {
+		int xx = createRandom();
+		int yy = createRandom();
+		for (int y = yy; y < colLin+yy; y++) {
+			if (y>colLin-1) {
+				y = y-colLin;
+			}
+			for (int x = xx; x < colLin+xx;x++) {
+				if (x>colLin-1) {
+					x = x-colLin;
+				}
+				if (field[x][y].equals(-1)) {
+					int i = field[x][y];
+					Integer[] r = {x,y,i};
+					return r;
+				}
+			}
+		}
+		Integer[] r = {};
+		return r;
+	}
+	
+	
+	public void createSolvable() {
+		
+		//generatePossibleValuesArray();
+		Integer[] obv;
+		int x;
+		int y;
+		int c = 0;
+		int t = 0;
+		int r = 0;
+		int j;
+		// c = anzahl der gelöschten felder, t = versuche ein feld zu löschen, r = anzahl der random koordinaten, die erstellt 
+		analyzeField();
+		while (c<100 && t<100 && r<2000) {
+			x = createRandom();
+			y = createRandom();
+			r++;
+			if (field[y][x]!=-1) {
+				j = field[y][x];
+				removeNumber(x,y);
+				System.out.println("c: "+c+ " t: "+t+ " r: "+r);
+				analyzeField();
+				t++;
+				obv = checkForObvious(x,y,j);
+				if (obv.length == 0) {
+					field[y][x]=j;
+				} else {
+					sp.add(""+x+","+y+","+j);
+					c++;
+					t = 0;
+					r = 0;
+				}
+				
+			}
+		}
+		printSolution();
+	}
+	
+	
+
+	/**
+	 * 
+	 * @return: Arraylist of Strings with the structure "x,y,i" x and y are the coordinates of the wrong input and i the correct input
+	 */
+	public ArrayList<String> checkField() {
+		ArrayList<String> r = new ArrayList<String>();
+		for (int y = 0; y < colLin; y++) {
+			for (int x = 0; x < colLin;x++) {
+				if (field[y][x]!= -1) {
+					if (field[y][x]!=solution[y][x]) {
+						int i = solution[y][x];
+						r.add(""+x+","+y+","+i);
+					}
+				}
+			}
+		}
+		return r;
+	}
+	/**
+	 * removing a number from the field equals setting that number to -1
+	 * @param x
+	 * @param y
+	 */
+	private void removeNumber(int x, int y) {
+		field[y][x] = -1;
+	}
+	
+	private void analyzeField() {
+		for (int y = 0; y < colLin; y++) {
+			for (int x = 0; x < colLin;x++) {
+				for (int i = 1; i < colLin+1; i++) {
+					possibles[y][x][i]=0;
+					if (field[y][x] == -1) {
+						if (checkValidInput(x,y,i)) {
+							possibles[y][x][i]=i;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+
+
+	private Integer[] checkForObvious(int x, int y, int i) {
+		Integer[] r;
+		r = checkForOneSolution(x,y);
+		if (r.length == 0) {
+			r = checkForObviousColumn(x,i);
+			if (r.length == 0) {
+				r = checkForObviousRow(y,i);
+				if (r.length == 0) {
+					r = checkForObviousBox(x,y,i);
+					if (r.length == 0) {
+						return r;
+					}
+				}
+			}
+		}
+		return r;
+	}
+
+	private Integer[] checkForObviousColumn(int x, int ii) {
+		Boolean tempc = false;
+		int c = 0;
+		int y;
+		for (int i = 1; i<colLin+1; i++) {
+				//check if i is already in the COlumn
+				for (y = 0; y < colLin; y++) {
+					if (field[y][x] == i) {
+						tempc = true;
+					}
+				}
+				//counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
+				if (tempc == false) {
+					for (y = 0; y < colLin; y++) {
+						if (possibles[y][x][i]== i) {
+							c++;
+						}
+					}
+				}
+				//returns the first position and the value that can be inserted by the user
+				if (c == 1 && i == ii) {
+					//TODO y ist aktuell nicht der korrekte wert der übergeben wird
+					Integer[] r = {x,y,i};
+					return r;
+				}
+		}
+		//if there is no obvious solution the return array is empty
+		Integer[] r = {};
+		return r;
+	}
+	
+
+	private Integer[] checkForObviousRow(int y, int ii) {
+		Boolean tempc = false;
+		int c = 0;
+		int x;
+		for (int i = 1; i<colLin+1; i++) {
+				tempc = false;
+				//check if i is already in the Row
+				for (x = 0; x < colLin; x++) {
+					if (field[y][x] == i) {
+						tempc = true;
+					}
+				}
+				//counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
+				if (tempc == false) {
+					for (x = 0; x < colLin; x++) {
+						if (possibles[y][x][i]==i) {
+							c++;
+						}
+					}
+				}
+				
+				
+				
+				//returns the first position and the value that can be inserted by the user
+				if (c == 1 && i == ii) {
+					//TODO x ist aktuell nicht der korrekte wert der übergeben wird
+					Integer[] r = {x,y,i};
+					return r;
+				}
+		}
+		//if there is no obvious solution the return array is empty
+		Integer[] r = {};
+		return r;
+	}
+
+	private Integer [] checkForOneSolution(int x, int y) {
+		int d = 0;
+		int j;
+		for (j = 1; j < colLin+1; j++) {
+			if (possibles[y][x][j] == 0) {
+				d++;
+			}
+		}
+		if (d == colLin-1) {
+			Integer[] r = {x,y};
+			return r;
+		}
+		Integer[] r = {};
+		return r;
+	}
+
+	private Integer[] checkForObviousBox(int xx, int yy, int ii) {
+		Boolean tempc = false;
+		int c = 0;
+
+		int x2;
+		int y2;
+		int x = xx - (xx % boxPerColLin);
+		int y = yy - (yy % boxPerColLin);
+
+		
+		
+		for (int i = 1; i<colLin+1; i++) {
+					tempc = false;
+					for (y2 = y; y2 < y+boxPerColLin; y2++) {
+						//check if i is already in the Box
+						for (x2 = x; x2 < x+boxPerColLin; x2++) {
+							if (field[y2][x2] == i) {
+								tempc = true;
+							}
+						}
+					}
+					//counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
+					if (tempc == false) {
+						for (y2 = y; y2 < y+boxPerColLin; y2++) {
+							for (x2 = x; x2 < x+boxPerColLin; x2++) {
+								if (possibles[y2][x2][i]==i) {
+									c++;
+								}
+	
+							}
+						}
+						if (c == 1 && i == ii) {
+							//TODO: x and y are random variables that are returened and not the real positions (we have to check for scope whether this is necessary or not
+							Integer[] r = {x,y,i};
+							return r;
+						}
+					}
+		}
+		Integer[] r = {};
+		return r;
+		}
+
+	
+	
+	private Integer createRandom() {
+		Random rand = new Random();
+		int n = rand.nextInt(colLin);
+		return n;
+	}
+	
+	private Integer findZ(int x, int y) {
+
+		int z = 0;
+		int z1 = x/boxPerColLin;
+		if (x%boxPerColLin != 0) {
+			z1++;
+		}
+		int z2 = y/boxPerColLin;
+		if (y%boxPerColLin != 0) {
+			z2++;
+		}
+		z = z1+boxPerColLin*z2;
+		return z;
+	}
 
 
 
 
 
-
-    public void createSolvable() {
-
-        //generatePossibleValuesArray();
-        Integer[] obv;
-        int x;
-        int y;
-        int c = 0;
-        int t = 0;
-        int r = 0;
-        // c = anzahl der gelöschten felder, t = versuche ein feld zu löschen, r = anzahl der random koordinaten, die erstellt
-        while (c<81 && t<c+20) {
-            analyzeField();
-            x = createRandom();
-            y = createRandom();
-            r++;
-            if (field[y][x]!=-1) {
-                int j = field[y][x];
-                removeNumber(x,y);
-                System.out.println("c: "+c+ " t: "+t+ " r: "+r);
-                analyzeField();
-                c++;
-                t++;
-                obv =checkForObvious1();
-                if (obv.length == 0) {
-                    field[y][x]=j;
-                    c--;
-                }
-
-            }
-        }
-    }
-
-    public Boolean checkCompletedField() {
-        boolean r = true;
-        for (int y = 0; y < colLin; y++) {
-            for (int x = 0; x < colLin;x++) {
-                r = checkValidInput(x,y,field[x][y]);
-                if (r == false) {
-                    return r;
-                }
-            }
-        }
-        return r;
-    }
-
-    private void removeNumber(int x, int y) {
-        field[y][x] = -1;
-    }
-
-        /*
-    public void generatePossibleValuesArray() {
-        for (int y = 0; y < colLin; y++) {
-            for (int x = 0; x < colLin;x++) {
-//              if (field[y][x] == -1) {
-                    possibles[y][x].add(10);
-
-//              }
-            }
-        }
-    }
-
-    public void generatePossibleValuesArray(int x, int y) {
-                if (field[y][x] == -1) {
-                    possibles[y]= new ArrayList<Integer>();
-
-                }
-    }
-    */
-
-    private void analyzeField() {
-        for (int y = 0; y < colLin; y++) {
-            for (int x = 0; x < colLin;x++) {
-                for (int i = 1; i < 10; i++) {
-                    if (field[y][x] == -1) {
-                        if (checkValidInput(x,y,i)) {
-                            possibles[y][x][i]=i;
-                        }
-                    } else {
-                        possibles[y][x][i]=0;
-                    }
-                }
-            }
-        }
-    }
-    /**
-     *
-     * @return TODO: korrekte Angabe der Koordinate und des Wertes, der auf jeden Fall einfach gefunden werden kann, es mucss glaub ich nicht immer der sein, den man entfernt hat, sonst wäre es gar nicht notwendig zu returnen, da der wert dann schon die random zahlen sind
-     */
-    private Integer[] checkForObvious1() {
-        Integer[] r;
-        r = checkForObviousColumn();
-        if (r.length == 0) {
-            r = checkForObviousRow();
-            if (r.length == 0) {
-                return r;
-            }
-        } else {
-            r = checkForObviousBox();
-            if (r.length == 0) {
-                return r;
-            }
-        }
-        return r;
-    }
-
-    /*
-    private Integer[] checkForObvious2() {
-        Integer[] r = {};
-        for (int x = 0; x < colLin; x++) {
-            for (int y = 0; y < colLin; y++) {
-                for (y2 = boxPerColLin; y2 < colLin; y2++) {
-                    for (x2 = boxPerColLin; x2 < colLin; x2++) {
-                        r = checkForObviousColumn(0);
-                        if (r.length == 0) {
-                            r = checkForObviousRow(0);
-                        } else {
-                            r = r;
-                        }
-                    }
-                }
-            }
-        }
-        return r;
-    }
-    */
-    private Integer[] checkForObviousColumn() {
-        Boolean tempc = false;
-        int c = 0;
-        int x;
-        int y;
-        for (int i = 1; i<colLin; i++) {
-            for (x = 0; x < colLin; x++) {
-                //check if i is already in the COlumn
-                for (y = 0; y < colLin; y++) {
-                    if (field[y][x] == i) {
-                        tempc = true;
-                    }
-                }
-                //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-                if (tempc == false) {
-                    for (y = 0; y < colLin; y++) {
-                        if (possibles[y][x][i]== i) {
-                            c++;
-                        }
-                    }
-                }
-                //returns the first position and the value that can be inserted by the user
-                if (c == 1) {
-                    //TODO y ist aktuell nicht der korrekte wert der übergeben wird
-                    Integer[] r = {x,y,i};
-                    return r;
-                }
-            }
-        }
-        //if there is no obvious solution the return array is empty
-        Integer[] r = {};
-        return r;
-    }
-
-    private Integer[] checkForObviousColumn(int x) {
-        Boolean tempc = false;
-        int c = 0;
-        int y;
-        for (int i = 1; i<colLin; i++) {
-            //check if i is already in the COlumn
-            for (y = 0; y < colLin; y++) {
-                if (field[y][x] == i) {
-                    tempc = true;
-                }
-            }
-            //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-            if (tempc == false) {
-                for (y = 0; y < colLin; y++) {
-                    if (possibles[y][x][i]== i) {
-                        c++;
-                    }
-                }
-            }
-            //returns the first position and the value that can be inserted by the user
-            if (c == 1) {
-                //TODO y ist aktuell nicht der korrekte wert der übergeben wird
-                Integer[] r = {x,y,i};
-                return r;
-            }
-        }
-        //if there is no obvious solution the return array is empty
-        Integer[] r = {};
-        return r;
-    }
-
-    private Integer[] checkForObviousRow() {
-        Boolean tempc = false;
-        int c = 0;
-        int x;
-        int y;
-        for (int i = 1; i<colLin; i++) {
-            for (y = 0; y < colLin; y++) {
-                tempc = false;
-                //check if i is already in the Row
-                for (x = 0; x < colLin; x++) {
-                    if (field[y][x] == i) {
-                        tempc = true;
-                    }
-                }
-                //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-                if (tempc == false) {
-                    for (x = 0; x < colLin; x++) {
-                        if (possibles[y][x][i]==i) {
-                            c++;
-                        }
-                    }
-                }
-                //returns the first position and the value that can be inserted by the user
-                if (c == 1) {
-                    //TODO x ist aktuell nicht der korrekte wert der übergeben wird
-                    Integer[] r = {x,y,i};
-                    return r;
-                }
-            }
-        }
-        //if there is no obvious solution the return array is empty
-        Integer[] r = {};
-        return r;
-    }
-
-
-    private Integer[] checkForObviousRow(int y) {
-        Boolean tempc = false;
-        int c = 0;
-        int x;
-        for (int i = 1; i<colLin; i++) {
-            tempc = false;
-            //check if i is already in the Row
-            for (x = 0; x < colLin; x++) {
-                if (field[y][x] == i) {
-                    tempc = true;
-                }
-            }
-            //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-            if (tempc == false) {
-                for (x = 0; x < colLin; x++) {
-                    if (possibles[y][x][i]==i) {
-                        c++;
-                    }
-                }
-            }
-            //returns the first position and the value that can be inserted by the user
-            if (c == 1) {
-                //TODO x ist aktuell nicht der korrekte wert der übergeben wird
-                Integer[] r = {x,y,i};
-                return r;
-            }
-        }
-        //if there is no obvious solution the return array is empty
-        Integer[] r = {};
-        return r;
-    }
-
-
-    private Integer[] checkForObviousBox() {
-        Boolean tempc = false;
-        int c = 0;
-        int x = boxPerColLin;
-        int y = boxPerColLin;
-        int x2;
-        int y2;
-
-
-        for (int i = 1; i<10; i++) {
-            for (y2 = boxPerColLin; y2 < colLin; y2++) {
-                for (x2 = boxPerColLin; x2 < colLin; x2++) {
-
-                    tempc = false;
-                    for (y = y2-boxPerColLin; y < y2; y++) {
-                        //check if i is already in the Box
-                        for (x = x2-boxPerColLin; x < x2; x++) {
-                            if (field[y][x] == i) {
-                                tempc = true;
-                            }
-                        }
-                    }
-                    //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-                    if (tempc == false) {
-                        for (y = y2-boxPerColLin; y < y2; y++) {
-                            for (x = x2-boxPerColLin; x < x2; x++) {
-                                if (possibles[y][x][i]==i) {
-                                    c++;
-                                }
-
-                            }
-                        }
-                        if (c == 1) {
-                            //TODO: x and y are random variables that are returened and not the real positions (we have to check for scope whether this is necessary or not
-                            Integer[] r = {x,y,i};
-                            return r;
-                        }
-                    }
-                }
-            }
-        }
-        //if there is no obvious solution the return array is empty
-        Integer[] r = {};
-        return r;
-    }
-    /*
-    private Integer[] checkForObviousBox(int z) {
-        Boolean tempc = false;
-        int c = 0;
-        int x = boxPerColLin;
-        int y = boxPerColLin;
-        int x2;
-        int y2;
-
-
-        for (int i = 1; i<10; i++) {
-            for (y2 = boxPerColLin; y2 < colLin; y2++) {
-                for (x2 = boxPerColLin; x2 < colLin; x2++) {
-
-                    tempc = false;
-                    for (y = y2-boxPerColLin; y < y2; y++) {
-                        //check if i is already in the Box
-                        for (x = x2-boxPerColLin; x < x2; x++) {
-                            if (field[y][x] == i) {
-                                tempc = true;
-                            }
-                        }
-                    }
-                    //counts how often i is a possible Value in the row (if its exactly one, that solution can be easily found by the user
-                    if (tempc == false) {
-                        for (y = y2-boxPerColLin; y < y2; y++) {
-                            for (x = x2-boxPerColLin; x < x2; x++) {
-                                if (possibles[y][x][i]==i) {
-                                    c++;
-                                }
-
-                            }
-                        }
-                        if (c == 1) {
-                            //TODO: x and y are random variables that are returened and not the real positions (we have to check for scope whether this is necessary or not
-                            Integer[] r = {x,y,i};
-                            return r;
-                        }
-                    }
-                }
-                //if there is no obvious solution the return array is empty
-                Integer[] r = {};
-                return r;
-            }
-        }
-        }
-    */
-
-
-    private Integer createRandom() {
-        Random rand = new Random();
-        int n = rand.nextInt(colLin);
-        return n;
-    }
 
     //ab hier ist es von TIm
 
