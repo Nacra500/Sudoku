@@ -8,16 +8,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import java.awt.AlphaComposite
+import androidx.compose.ui.unit.sp
 
 @Composable
 @Preview
@@ -27,51 +37,79 @@ fun MenuView(vm: MenuViewModel) {
 
     MaterialTheme {
         Column {
-            Text(
-                buildAnnotatedString {
-                    append("Points: ")
-                    withStyle(
-                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                    ) {
-                        append(gameUiState.xp.toString())
-                    }
-                }, modifier = Modifier.clickable { vm.updateXP(1000) }
-            )
-            Row {
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text("Welcome to Sudoku!")
+            }
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text("")
+            }
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp) {
+                    Text(
+                        buildAnnotatedString {
+                            append("Points: ")
+                            withStyle(
+                                style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                            ) {
+                                append(gameUiState.xp.toString())
+                            }
+                        }, modifier = Modifier.clickable { vm.updateXP(1000) }
+                            .background(Color.LightGray)
+                            .padding(10.dp)
+
+                    )
+                }
+            }
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text("")
+            }
+
+
+            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
                 for (i in gameUiState.gameModes) {
                     gameMode(i, gameUiState.selectedMode, vm)
                 }
             }
-
-            gameUiState.buttonState.let { points ->
-                Button(onClick = {
-                    vm.buttonPressed(points)
-                }, colors = ButtonDefaults.buttonColors(backgroundColor = if(points > 0) Color.Green else Color.Red)) {
-                    if(gameUiState.buttonState > 0){
-                        Text(
-                            buildAnnotatedString {
-                                append("Verdienen \n")
-                                withStyle(
-                                    style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                                ) {
-                                    append(points.toString())
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Text("")
+            }
+            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp){
+                gameUiState.buttonState.let { points ->
+                    Button(
+                        onClick = {
+                            vm.buttonPressed(points)
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = if (points > 0) Color.Green else Color.Red)
+                    ) {
+                        if (gameUiState.buttonState > 0) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Verdienen \n")
+                                    withStyle(
+                                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                                    ) {
+                                        append(points.toString())
+                                    }
                                 }
-                            }
-                        )
-                    }else{
-                        Text(
-                            buildAnnotatedString {
-                                append("Kaufen \n")
-                                withStyle(
-                                    style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                                ) {
-                                    append((points*-1).toString())
+                            )
+                        } else {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Kaufen \n")
+                                    withStyle(
+                                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                                    ) {
+                                        append((points * -1).toString())
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
+            }
+
         }
     }
 }
@@ -81,21 +119,42 @@ fun MenuView(vm: MenuViewModel) {
 fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
     val modifier = Modifier
         .padding(15.dp)
+
     Card(
-        modifier = modifier.border(2.dp, if (type == selected) Color.Black else if(type.available) Color.Green else Color.Red),
+        modifier = Modifier
+            .border(2.dp, if (type == selected) Color.Black else if(type.available) Color.Green else Color.Red, shape = RoundedCornerShape(20.dp))
+            .padding(15.dp),
         elevation = 10.dp,
-        onClick = { vm.updateGameMode(type) }
+        //shape = RoundedCornerShape(20.dp),
+        onClick = { vm.updateGameMode(type)}
+
+
     ) {
-        Column {
-            Image(
+        Column() {
+            Row() {
+                Image(
                 painter = painterResource("drawable/test.jpg"),
                 contentDescription = "Andy Rubin",
+                     contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .clip(RoundedCornerShape(10))
                     .width(128.dp)
             )
-            Text(type.name)
-            radioChips(type, vm)
+            }
+            Row() {
+                Box() {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(type.name)
+                        if (type.available) {
+                        } else {
+                            Icon(imageVector = Icons.Default.Lock, contentDescription = null)
+                        }
+
+                    }
+                }
+            }
+                radioChips(type, vm)
+
         }
     }
 }
@@ -103,6 +162,7 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun radioChips(type: GameMode, vm: MenuViewModel) {
+
     Column() {
 
         Row {
@@ -110,9 +170,27 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                 Chip(
                     onClick = { vm.updateSize(type, i) },
                     modifier = Modifier
-                        .border(2.dp, if (type.options.size.selected == i) Color.Black else if(i.ordinal <= type.options.size.available.ordinal) Color.Green else Color.Red),
+                        .width(90.dp)
+                        .border(0.dp, if (type.options.size.selected == i) Color.Black else if(i.ordinal <= type.options.size.available.ordinal) Color.Black else Color.Red),
                 ) {
-                    Text(i.toString())
+                    Box(contentAlignment = Alignment.Center) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = i.toString(),
+                                style = TextStyle(fontSize= 12.sp)
+                            )
+
+
+                            if (i.ordinal <= type.options.size.available.ordinal) {
+
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -121,9 +199,27 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                 Chip(
                     onClick = { vm.updateDifficult(type, i) },
                     modifier = Modifier
-                        .border(2.dp, if (type.options.difficult.selected == i) Color.Black else if(i.ordinal <= type.options.difficult.available.ordinal) Color.Green else Color.Red),
+                        .width(90.dp)
+                        .border(0.dp, if (type.options.difficult.selected == i) Color.Black else if(i.ordinal <= type.options.difficult.available.ordinal) Color.Green else Color.Red),
                 ) {
-                    Text(i.toString())
+                    Box() {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = i.toString(),
+                                style = TextStyle(fontSize = 12.sp)
+                            )
+                            if (i.ordinal <= type.options.difficult.available.ordinal) {
+
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+
                 }
             }
         }
