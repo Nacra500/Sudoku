@@ -18,6 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.math.absoluteValue
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.*
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -40,6 +45,8 @@ fun GameView(vm: GameViewModel) {
             }) {
                 Text("EndGame")
             }
+
+            CountUpTimer()
 
             // Sudoku grid
 
@@ -84,3 +91,27 @@ fun GameView(vm: GameViewModel) {
     }
 }
 
+
+
+@Composable
+fun CountUpTimer() {
+    var timePassed by remember { mutableStateOf(0) }
+    val timerText = remember {
+        derivedStateOf {
+            String.format("%02d:%02d", timePassed / 60, timePassed % 60)
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        while (true) {
+            delay(1000L)
+            timePassed++
+        }
+    }
+
+    Text(
+        text = timerText.value,
+        fontSize = 30.sp,
+        modifier = Modifier.padding(16.dp)
+    )
+}
