@@ -77,5 +77,5 @@ data class GameUiState(
     val render: Boolean = false,
 )
 
-val numKeyMap: Map<Int, Int> = mapOf(97 to 1, 98 to 2, 99 to 3, 100 to 4, 101 to 5, 102 to 6, 103 to 7,  104 to 8, 105 to 9)
+val numKeyMap: Map<Int, Int> = mapOf(97 to 1, 98 to 2, 99 to 3, 100 to 4, 101 to 5, 102 to 6, 103 to 7,  104 to 8, 105 to 9, 49 to 1, 50 to 2, 51 to 3, 52 to 4, 53 to 5, 54 to 6, 55 to 7, 56 to 8, 57 to 9)
 val navKeyMap: Map<Int, Int> = mapOf(37 to 1, 38 to 2, 39 to 3, 40 to 4)
