@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import values.ComposeStyles
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
@@ -28,7 +27,6 @@ import kotlin.math.sqrt
 @Preview
 fun GameView(vm: GameViewModel) {
     val gameUiState by vm.uiState.collectAsState()
-    vm.loadGame()
 
     MaterialTheme {
         Column(
@@ -40,6 +38,7 @@ fun GameView(vm: GameViewModel) {
         ) {
 
             CountUpTimer()
+            EarningPoints(vm.uiState.value.points)
             // Sudoku grid
             SudokuGrid(gameUiState.field, gameUiState.selection, vm)
 
@@ -52,6 +51,23 @@ fun GameView(vm: GameViewModel) {
 
         }
     }
+}
+
+@Composable
+fun EarningPoints(points: Int){
+    var timePassed by remember { mutableStateOf(0) }
+    LaunchedEffect(key1 = true) {
+        while (true) {
+            delay(60000L)
+            timePassed++
+        }
+    }
+
+    Text(
+        text = "Points: "+(points-timePassed*10),
+        fontSize = 30.sp,
+        modifier = Modifier.padding(16.dp)
+    )
 }
 
 @Composable

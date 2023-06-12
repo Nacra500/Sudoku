@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -24,10 +23,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import java.awt.AlphaComposite
 import androidx.compose.ui.unit.sp
+import domain.DIFFICULT
+import domain.GameMode
+import domain.SIZES
 
 @Composable
 @Preview
