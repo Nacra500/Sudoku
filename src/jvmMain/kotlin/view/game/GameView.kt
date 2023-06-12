@@ -21,6 +21,11 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.*
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -48,7 +53,6 @@ fun GameView(vm: GameViewModel) {
             ) {
                 Text("EndGame")
             }
-
         }
     }
 }
@@ -72,7 +76,6 @@ fun EarningPoints(points: Int){
 
 @Composable
 fun SudokuGrid(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
-
     with(ComposeStyles.SudokuGridStyles) {
 
         val gridSize = field.size
@@ -150,6 +153,7 @@ fun GridDivider(heightDp: Dp, widthDp: Dp){
  * @see androidx.compose.runtime.mutableStateOf
  * @see androidx.compose.runtime.derivedStateOf
  */
+
 @Composable
 fun CountUpTimer() {
     var timePassed by remember { mutableStateOf(0) }
