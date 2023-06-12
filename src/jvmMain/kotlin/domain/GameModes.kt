@@ -1,4 +1,4 @@
-package view.menu
+package domain
 
 abstract class GameMode{
     abstract val name: String

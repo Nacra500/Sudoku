@@ -1,11 +1,13 @@
 package view.menu
 
+import NavigationParcel
+import domain.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class MenuViewModel(var di: MutableStateFlow<Int>) {
+class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
 
     private var _uiState = MutableStateFlow(MenuUiState())
     val uiState: StateFlow<MenuUiState> = _uiState.asStateFlow()
@@ -20,9 +22,8 @@ class MenuViewModel(var di: MutableStateFlow<Int>) {
         }
     }
 
-
     fun startGame() {
-        di.value = Screens.GAME.ordinal
+        di.value = NavigationParcel.Game(_uiState.value.selectedMode)
     }
 
     fun updateSize(gameMode: GameMode, i: SIZES) {
