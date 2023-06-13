@@ -88,7 +88,7 @@ public class SudokuGenerator{
             return true;
     }
 */
-    private boolean checkValidInput(int x, int y, Integer val){
+    public boolean checkValidInput(int x, int y, Integer val){
         if (field[y][x].equals(val)) return true
         return checkBox(x,y,val) && checkLine(y, val) && checkColumn(x, val);
     }

@@ -9,7 +9,7 @@ public class XSudokuGenerator extends SudokuGenerator{
     }
 
     @Override
-    private booleancheckValidInput(int x, int y, Integer val) {
+    public booleancheckValidInput(int x, int y, Integer val) {
         if (field[y][x].equals(val)) return true
         return (checkBox(x,y,val)
                 && checkLine( y,val)
