@@ -1,5 +1,13 @@
 package domain
 
+/**
+ * Definition of a Game Mode. It contains solid values like name and editable values like the options that
+ * can be modified during the game. The options controll the user selection of size and difficulty for the game mode and the
+ * availability of the selection. The option informations and the multiplicator as indicator of pricing are used to
+ * calculate the costs of the game mode.
+ * If the option selections are greater than the availability the costs are negative and increasing with the multiplicator.
+ * If the option selections are in the borders of the availability the costs are positive and reflect the earnable points for solving the sudoku of that kind.
+ */
 abstract class GameMode{
     abstract val name: String
     val options: GameOptions = GameOptions()

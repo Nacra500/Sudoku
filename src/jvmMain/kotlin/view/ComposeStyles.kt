@@ -1,6 +1,9 @@
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * Defined styles for the compose elements
+ * */
 object ComposeStyles {
 
     object SudokuGridStyles{
