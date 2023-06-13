@@ -1,8 +1,10 @@
+import org.gradle.internal.impldep.org.fusesource.jansi.AnsiRenderer.test
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+
 }
 
 group = "com.example"
@@ -27,7 +29,13 @@ kotlin {
                 implementation("androidx.navigation:navigation-compose:2.5.3")
             }
         }
-        val jvmTest by getting
+        val jvmTest by getting{
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation("org.junit.jupiter:junit-jupiter:5.8.1")
+                implementation("org.mockito:mockito-core:3.1.0")
+            }
+        }
     }
 }
 

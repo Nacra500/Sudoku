@@ -51,11 +51,11 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
         updateButton()
     }
 
-    fun buttonPressed(points: Int) {
-        if (points > 0) {
+    fun buttonPressed() {
+        if (_uiState.value.selectedMode.costs > 0) {
             startGame()
-        } else if (-points <= _uiState.value.xp) {
-            updateXP(points)
+        } else if (-_uiState.value.selectedMode.costs <= _uiState.value.xp) {
+            updateXP(_uiState.value.selectedMode.costs)
             val newState = _uiState.value.copy()
             newState.gameModes.find { it.name == _uiState.value.selectedMode.name }?.apply {
                 if(!this.available){
@@ -81,8 +81,8 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
 
 data class MenuUiState(
     var xp: Int = 0,
-    var gameModes: List<GameMode> = listOf(Mode1, Mode2, Mode3),
-    var selectedMode: GameMode = Mode1,
+    var gameModes: List<GameMode> = listOf(Mode1(), Mode2(), Mode3()),
+    var selectedMode: GameMode = Mode1(),
     var startGame: Boolean = false,
     val render: Boolean = false,
     val buttonState: Int = 0
