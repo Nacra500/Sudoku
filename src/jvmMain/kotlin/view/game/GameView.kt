@@ -13,7 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
+import kotlin.random.Random
+import androidx.compose.foundation.layout.padding
+
 
 
 @Composable
@@ -39,8 +42,8 @@ fun GameView(vm: GameViewModel) {
 
             CountUpTimer()
             EarningPoints(vm.uiState.value.points)
-            // Sudoku grid
-            SudokuGrid(gameUiState.field, gameUiState.selection, vm)
+            // Sudoku grid (add a mode input to choose the function)
+            SudokuGridEven(gameUiState.field, gameUiState.selection, vm)
 
             Button(onClick = {
                 vm.endGame()
@@ -48,7 +51,6 @@ fun GameView(vm: GameViewModel) {
             ) {
                 Text("EndGame")
             }
-
         }
     }
 }
@@ -72,7 +74,6 @@ fun EarningPoints(points: Int){
 
 @Composable
 fun SudokuGrid(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
-
     with(ComposeStyles.SudokuGridStyles) {
 
         val gridSize = field.size
@@ -122,6 +123,132 @@ fun SudokuGrid(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameVie
     }
 }
 
+
+@Composable
+fun SudokuGridX(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
+    with(ComposeStyles.SudokuGridStyles) {
+
+        val gridSize = field.size
+        val subGridSize = sqrt(gridSize.toDouble()).toInt()
+        val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
+
+        for (i in field.indices) {
+            if (i % subGridSize == 0) GridDivider(thickBorderWidth, gridWidth)
+            Row() {
+                for (j in field[i].indices) {
+                    if (j % subGridSize == 0) {
+                        GridDivider(boxSize, thickBorderWidth)
+                    }
+                    (field[i][j] <= 0).let { fillAble ->
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .border(
+                                    width = normalBorderWidth,
+                                    color = Color.Black,
+                                ).run {
+                                    if (fillAble) this.clickable { vm.selectField(i, j) } else this
+                                }.run {
+                                    when {
+                                        i == j || i == gridSize - j - 1 -> this.background(Color.Blue) // Change the background to blue when i == j or i == gridSize - j - 1
+                                        selection?.first == i && selection.second == j -> this.background(Color(0xFFffe0b3))
+                                        else -> this
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                fontWeight = if (!fillAble) FontWeight.ExtraBold else null,
+                                text = if (field[i][j] == 0) ""
+                                else field[i][j].absoluteValue.toString(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .height(textSize)
+                                    .fillMaxSize(),
+                                color = if (fillAble) textColorPrimary else textColorSecondary
+                            )
+                        }
+                    }
+                }
+                GridDivider(boxSize, thickBorderWidth)
+            }
+        }
+        GridDivider(thickBorderWidth, gridWidth)
+    }
+}
+
+
+@Composable
+fun SudokuGridEven(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
+    with(ComposeStyles.SudokuGridStyles) {
+
+        val completeField = field //delete after adding completeField: Array<Array<Int>> to input
+        val mode = 3 //delete after adding the difficulty mode to the input
+
+        val gridSize = field.size
+        val subGridSize = sqrt(gridSize.toDouble()).toInt()
+        val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
+
+        val highlightThreshold = when (mode) {
+            1 -> 1.0
+            2 -> 0.7
+            3 -> 0.5
+            else -> throw IllegalArgumentException("Mode must be 1, 2, or 3")
+        }
+
+        for (i in field.indices) {
+            if (i % subGridSize == 0) GridDivider(thickBorderWidth, gridWidth)
+            Row() {
+                for (j in field[i].indices) {
+                    if (j % subGridSize == 0) {
+                        GridDivider(boxSize, thickBorderWidth)
+                    }
+                    (field[i][j] <= 0).let { fillAble ->
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .border(
+                                    width = normalBorderWidth,
+                                    color = Color.Black,
+                                ).run {
+                                    if (fillAble) this.clickable { vm.selectField(i, j) } else this
+                                }.run {
+                                    when {
+                                        completeField[i][j] % 2 == 0 && Random.nextDouble() <= highlightThreshold -> this.background(
+                                            Color.Green
+                                        ) // Change the background to green when the number in completeField is even and a random number is below the threshold
+                                        selection?.first == i && selection.second == j -> this.background(
+                                            Color(
+                                                0xFFffe0b3
+                                            )
+                                        )
+
+                                        else -> this
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                fontWeight = if (!fillAble) FontWeight.ExtraBold else null,
+                                text = if (field[i][j] == 0) ""
+                                else field[i][j].absoluteValue.toString(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .height(textSize)
+                                    .fillMaxSize(),
+                                color = if (fillAble) textColorPrimary else textColorSecondary
+                            )
+                        }
+                    }
+                }
+                GridDivider(boxSize, thickBorderWidth)
+            }
+        }
+        GridDivider(thickBorderWidth, gridWidth)
+    }
+}
+
+
 @Composable
 fun GridDivider(heightDp: Dp, widthDp: Dp){
     Divider(
@@ -134,14 +261,9 @@ fun GridDivider(heightDp: Dp, widthDp: Dp){
 
 
 /**
- * A Jetpack Compose function to display a count up timer.
- *
  * The function initializes a timer that starts from zero and counts upwards.
  * The timer updates every second and the displayed time is formatted in
  * the "MM:SS" format. The timer runs indefinitely.
- *
- * Note: This Composable function uses a LaunchedEffect coroutine which isn't
- * suitable for long-running or background tasks.
  *
  * Example usage: CountUpTimer()
  *
@@ -150,6 +272,7 @@ fun GridDivider(heightDp: Dp, widthDp: Dp){
  * @see androidx.compose.runtime.mutableStateOf
  * @see androidx.compose.runtime.derivedStateOf
  */
+
 @Composable
 fun CountUpTimer() {
     var timePassed by remember { mutableStateOf(0) }
