@@ -13,6 +13,9 @@ import domain.GameMode
 import view.menu.MenuView
 import view.menu.MenuViewModel
 
+/**
+ * App Composable that switchs between the screens and triggers navigation events in the view models
+ */
 @Composable
 @Preview
 fun App(navigation: MutableStateFlow<NavigationParcel>, menuViewModel: MenuViewModel, gameViewMode: GameViewModel) {
@@ -31,6 +34,11 @@ fun App(navigation: MutableStateFlow<NavigationParcel>, menuViewModel: MenuViewM
     }
 }
 
+/**
+ * Main functions that generates the viewModels for the two screens and is owner of
+ * the navigation flow to allow navigation and communication between the views.
+ * Additionaly keeps track of user inout
+ */
 fun main(){
     val navigation: MutableStateFlow<NavigationParcel> = MutableStateFlow(NavigationParcel.Menu())
     val menuViewModel = MenuViewModel(navigation)

@@ -8,6 +8,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import domain.GameMode
 
+/**
+ * The GameViewModel which orchestrates the user interface in regards of
+ * - input actions
+ * - loading game via the game engine
+ * - ends game
+ * - updates game states
+ *
+ * @param  MutableStateFlow<NavigationParcel>  Flow to communicate with main function and deliver achieved points
+ */
 class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
 
     private var _uiState = MutableStateFlow(GameUiState())
@@ -15,6 +24,12 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
 
     private lateinit var engine: SudokuGenerator
 
+    /**
+     * Uses the Sudoku Generator to generate according
+     * to the GameMode the gamefield and inserts it into the uiState
+     *
+     * @param  GameMode  the GameMode object that defines the to be loaded game
+     */
     fun loadGame(modi: GameMode) {
         println(modi)
         clearPoints()
@@ -26,16 +41,35 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         }
     }
 
+    /**
+     * Ends the game and navigates back to the menu with
+     * the earned points information
+     */
     fun endGame() {
         di.value = NavigationParcel.Menu(_uiState.value.points)
     }
 
+    /**
+     * Updates the selected field in the uiState
+     *
+     * @param  Int  the X coordinate of the selection
+     * @param  Int  the Y coordinate of the selection
+     */
     fun selectField(i: Int, j: Int) {
         _uiState.update { currentState ->
             currentState.copy(selection = Pair(i, j))
         }
     }
 
+    /**
+     * Tackles user input via the keyboard
+     * Actions are split in three categories represented by three keyMaps
+     * numKeyMap: Filters for number input which updates the game field
+     * navKeyMap: Filters for arrow input which updates the selection field to the next available one
+     * deletionKey: Filters for backspace and deletes user input in selected field
+     *
+     * @param  Int  the identifier of the pressed key
+     */
     fun keyEvent(key: Int): Boolean {
         _uiState.value.selection?.run{
             val field = _uiState.value.field
@@ -59,26 +93,49 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         return true
     }
 
+    /**
+     * Updates the game field in the uiState to reflect changes accordingly
+     *
+     * @param  Array<Array<Int>>  the new game field to be set
+     */
     fun updateField(newValue: Array<Array<Int>>){
         _uiState.update { currentState ->
             currentState.copy(field = newValue, render = !_uiState.value.render)
         }
     }
 
+    /**
+     * Updates the potential earnable XP for the user as they
+     * are decreased over time
+     *
+     * @param  Int  difference of the points to be set
+     */
     fun updatePoints(diff: Int){
         _uiState.update { currentState ->
             currentState.copy(points = uiState.value.points+diff)
         }
     }
+
+    /**
+     * Sets the points to zero
+     */
      fun clearPoints(){
         _uiState.update { currentState ->
             currentState.copy(points = 0)
         }
     }
-
 }
 
+/**
+ * @param Array<Array<Int>> the game field
+ * @return boolean which states of selection is inside of game borders
+ */
 private fun Pair<Int, Int>.testInBorders(field: Array<Array<Int>>): Boolean = first in field.indices && second in 0 until field[0].size
+
+/**
+ * @param Int the arrow value of the keyevent
+ * @return the new selection coordinates after going in direction of arrow keypress event
+ */
 private fun Pair<Int, Int>.moveField(key: Int) = when(key){
     1 -> this.copy(second = this.second - 1)
     2 -> this.copy(first = this.first - 1)
