@@ -64,7 +64,7 @@ fun MenuView(vm: MenuViewModel) {
             }
 
 
-            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 for (i in gameUiState.gameModes) {
                     gameMode(i, gameUiState.selectedMode, vm)
                 }
@@ -72,43 +72,42 @@ fun MenuView(vm: MenuViewModel) {
             Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 Text("")
             }
-            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp){
-                gameUiState.buttonState.let { points ->
-                    Button(
-                        onClick = {
-                            vm.buttonPressed(points)
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = if (points > 0) Color.Green else Color.Red)
-                    ) {
-                        if (gameUiState.buttonState > 0) {
-                            Text(
-                                buildAnnotatedString {
-                                    append("Verdienen \n")
-                                    withStyle(
-                                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                                    ) {
-                                        append(points.toString())
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp) {
+                    gameUiState.buttonState.let { points ->
+                        Button(
+                            onClick = {
+                                vm.buttonPressed()
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = if (points > 0) Color.Green else Color.Red)
+                        ) {
+                            if (gameUiState.buttonState > 0) {
+                                Text(
+                                    buildAnnotatedString {
+                                        append("EARN \n")
+                                        withStyle(
+                                            style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                                        ) {
+                                            append(points.toString())
+                                        }
                                     }
-                                }
-                            )
-                        } else {
-                            Text(
-                                buildAnnotatedString {
-                                    append("Kaufen \n")
-                                    withStyle(
-                                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                                    ) {
-                                        append((points * -1).toString())
+                                )
+                            } else {
+                                Text(
+                                    buildAnnotatedString {
+                                        append("SPENT \n")
+                                        withStyle(
+                                            style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                                        ) {
+                                            append((points * -1).toString())
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
             }
-            }
-
         }
     }
 }
@@ -116,43 +115,44 @@ fun MenuView(vm: MenuViewModel) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
-    val modifier = Modifier
-        .padding(15.dp)
 
     Card(
         modifier = Modifier
-            .border(2.dp, if (type == selected) Color.Black else if(type.available) Color.Green else Color.Red, shape = RoundedCornerShape(20.dp))
+            .border(
+                2.dp,
+                if (type == selected) Color.Black else if (type.available) Color.Green else Color.Red,
+                shape = RoundedCornerShape(20.dp)
+            )
             .padding(15.dp),
         elevation = 10.dp,
         //shape = RoundedCornerShape(20.dp),
-        onClick = { vm.updateGameMode(type)}
+        onClick = { vm.updateGameMode(type) }
 
 
     ) {
         Column() {
             Row() {
                 Image(
-                painter = painterResource("drawable/test.jpg"),
-                contentDescription = "Andy Rubin",
-                     contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(10))
-                    .width(128.dp)
-            )
+                    painter = painterResource("drawable/test.jpg"),
+                    contentDescription = "Andy Rubin",
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10))
+                        .width(128.dp)
+                )
             }
             Row() {
                 Box() {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(type.name)
-                        if (type.available) {
-                        } else {
+                        if (!type.available) {
                             Icon(imageVector = Icons.Default.Lock, contentDescription = null)
                         }
 
                     }
                 }
             }
-                radioChips(type, vm)
+            radioChips(type, vm)
 
         }
     }
@@ -170,23 +170,23 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     onClick = { vm.updateSize(type, i) },
                     modifier = Modifier
                         .width(90.dp)
-                        .border(0.dp, if (type.options.size.selected == i) Color.Black else if(i.ordinal <= type.options.size.available.ordinal) Color.Black else Color.Red),
+                        .border(
+                            0.dp,
+                            if (type.options.size.selected == i) Color.Black else if (i.ordinal <= type.options.size.available.ordinal) Color.Black else Color.Red
+                        ),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = i.toString(),
-                                style = TextStyle(fontSize= 12.sp)
+                                style = TextStyle(fontSize = 12.sp)
                             )
-
-
-                            if (i.ordinal <= type.options.size.available.ordinal) {
-
-                            } else {
+                            if (i.ordinal > type.options.size.available.ordinal) {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
-                                    modifier = Modifier.size(16.dp))
+                                    modifier = Modifier.size(16.dp)
+                                )
                             }
                         }
                     }
@@ -199,7 +199,10 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     onClick = { vm.updateDifficult(type, i) },
                     modifier = Modifier
                         .width(90.dp)
-                        .border(0.dp, if (type.options.difficult.selected == i) Color.Black else if(i.ordinal <= type.options.difficult.available.ordinal) Color.Green else Color.Red),
+                        .border(
+                            0.dp,
+                            if (type.options.difficult.selected == i) Color.Black else if (i.ordinal <= type.options.difficult.available.ordinal) Color.Green else Color.Red
+                        ),
                 ) {
                     Box() {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -207,9 +210,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                                 text = i.toString(),
                                 style = TextStyle(fontSize = 12.sp)
                             )
-                            if (i.ordinal <= type.options.difficult.available.ordinal) {
-
-                            } else {
+                            if (i.ordinal > type.options.difficult.available.ordinal) {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
@@ -218,7 +219,6 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                             }
                         }
                     }
-
                 }
             }
         }

@@ -30,16 +30,16 @@ data class GameOptionsItem<T>(var selected: T, var available: T)
 enum class SIZES{SMALL, NORMAL, BIG}
 enum class DIFFICULT{EASY, NORMAL, HARD}
 
-object Mode1 : GameMode() {
+class Mode1 : GameMode() {
     override val name = "Klassiker"
     override var available = true
     override val multiplicator = 1f
 }
-object Mode2 : GameMode() {
+class Mode2 : GameMode() {
     override val name: String = "Even-Odd"
     override val multiplicator = 2f
 }
-object Mode3 : GameMode() {
+class Mode3 : GameMode() {
     override val name: String = "X-Sudoku"
     override val multiplicator = 3f
 }

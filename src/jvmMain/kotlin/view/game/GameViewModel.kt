@@ -59,18 +59,18 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         return true
     }
 
-    private fun updateField(newValue: Array<Array<Int>>){
+    fun updateField(newValue: Array<Array<Int>>){
         _uiState.update { currentState ->
             currentState.copy(field = newValue, render = !_uiState.value.render)
         }
     }
 
-    private fun updatePoints(diff: Int){
+    fun updatePoints(diff: Int){
         _uiState.update { currentState ->
             currentState.copy(points = uiState.value.points+diff)
         }
     }
-    private fun clearPoints(){
+     fun clearPoints(){
         _uiState.update { currentState ->
             currentState.copy(points = 0)
         }
@@ -90,7 +90,6 @@ private fun Pair<Int, Int>.moveField(key: Int) = when(key){
 data class GameUiState(
     var field: Array<Array<Int>> = emptyArray<Array<Int>>(),
     var selection: Pair<Int, Int>? = null,
-    var endGame: Boolean = false,
     val render: Boolean = false,
     val points: Int = 0,
 )
