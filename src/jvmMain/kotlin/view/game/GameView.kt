@@ -5,14 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -23,13 +16,33 @@ import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 import kotlin.random.Random
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.ui.window.Popup
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
 
+import domain.SudokuGenerator
+import org.jetbrains.skia.paragraph.TextBox
 
 @Composable
 @Preview
 fun GameView(vm: GameViewModel) {
     val gameUiState by vm.uiState.collectAsState()
+    var popupControl by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Column(
@@ -39,20 +52,99 @@ fun GameView(vm: GameViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
-            CountUpTimer()
-            EarningPoints(vm.uiState.value.points)
-            // Sudoku grid (add a mode input to choose the function)
-            SudokuGridEven(gameUiState.field, gameUiState.selection, vm)
-
-            Button(onClick = {
-                vm.endGame()
-            }, modifier = Modifier.align(Alignment.End)
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) { //title
+                Text("Sudoku")
+            }
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("EndGame")
+                Column {
+
+                    // Sudoku grid (add a mode input to choose the function)
+                    val mode = "EvenOdd"
+                    val difficulty = 3
+
+                    when (mode) {
+                        // Generate a random value once
+                        "EvenOdd" -> SudokuGridEven(gameUiState.field, gameUiState.selection, vm, difficulty)
+                        "X" -> SudokuGridX(gameUiState.field, gameUiState.selection, vm)
+                        else -> SudokuGrid(gameUiState.field, gameUiState.selection, vm)
+                    }
+
+                    /*if (popupControl) {
+                        Popup(
+                            alignment = Alignment.Center,
+                            offset = IntOffset(-80, 600),
+                            onDismissRequest = { popupControl = false },
+
+                            ) {
+                            Surface(
+                                border = BorderStroke(4.dp, MaterialTheme.colors.secondary),
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xCCEEEEEE),
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(text = "I'm popping up")
+                                    Spacer(modifier = Modifier.height(32.dp))
+                                    TextButton(onClick = { popupControl = false }) {
+                                        Text(text = "Close Popup")
+                                    }
+                                }
+                            }
+                        }*/
+                }
+
+                Column {
+                    CountUpTimer()
+                    EarningPoints(vm.uiState.value.points)
+
+                    TextButton(onClick = { popupControl = true }) {
+                        Text("Hint")
+                    }
+
+                    Button(
+                        onClick = {
+                            //vm.submit()
+                        }, modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Submit")
+                    }
+
+                    Button(
+                        onClick = {
+                            vm.endGame()
+                        }, modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("EndGame")
+                    }
+                }
             }
         }
     }
+}
+
+
+@Composable
+fun displayHint(){
+
+}
+
+@Composable
+fun buyHint(){
+
 }
 
 @Composable
@@ -72,8 +164,13 @@ fun EarningPoints(points: Int){
     )
 }
 
+
 @Composable
-fun SudokuGrid(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
+fun SudokuGrid(
+    field: Array<Array<Int>>,
+    selection: Pair<Int, Int>?,
+    vm: GameViewModel
+) {
     with(ComposeStyles.SudokuGridStyles) {
 
         val gridSize = field.size
@@ -90,6 +187,9 @@ fun SudokuGrid(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameVie
                     (field[i][j] <= 0).let { fillAble ->
                         Box(
                             modifier = Modifier
+
+                                // add a highlight to the column + row the selected field is in
+
                                 .size(30.dp)
                                 .border(
                                     width = normalBorderWidth,
@@ -179,17 +279,20 @@ fun SudokuGridX(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameVi
 
 
 @Composable
-fun SudokuGridEven(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
+fun SudokuGridEven(
+    field: Array<Array<Int>>,
+    selection: Pair<Int, Int>?,
+    vm: GameViewModel,
+    difficulty: Int) {
     with(ComposeStyles.SudokuGridStyles) {
 
         val completeField = field //delete after adding completeField: Array<Array<Int>> to input
-        val mode = 3 //delete after adding the difficulty mode to the input
 
         val gridSize = field.size
         val subGridSize = sqrt(gridSize.toDouble()).toInt()
         val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
 
-        val highlightThreshold = when (mode) {
+        val highlightThreshold = when (difficulty) {
             1 -> 1.0
             2 -> 0.7
             3 -> 0.5
@@ -204,6 +307,7 @@ fun SudokuGridEven(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: Gam
                         GridDivider(boxSize, thickBorderWidth)
                     }
                     (field[i][j] <= 0).let { fillAble ->
+                        val randomValue = remember { Random.nextDouble() }
                         Box(
                             modifier = Modifier
                                 .size(30.dp)
@@ -214,7 +318,7 @@ fun SudokuGridEven(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: Gam
                                     if (fillAble) this.clickable { vm.selectField(i, j) } else this
                                 }.run {
                                     when {
-                                        completeField[i][j] % 2 == 0 && Random.nextDouble() <= highlightThreshold -> this.background(
+                                        completeField[i][j] % 2 == 0 && randomValue <= highlightThreshold -> this.background(
                                             Color.Green
                                         ) // Change the background to green when the number in completeField is even and a random number is below the threshold
                                         selection?.first == i && selection.second == j -> this.background(
