@@ -1,15 +1,13 @@
 import java.util.*
+import kotlin.math.sqrt
 
 /**
  * structure standardizing how a sudoku field looks like.
  */
 class SudokuField {
-    val COLLIN //defines how many columns and lines a field has
-            : Int
-    val BOXPERCOLLIN //defines how many boxes are locates in one line
-            : Int
-    val TOTALNUMBEROFCELLS //defines the total number of cells a field has
-            : Int
+    val COLLIN: Int //defines how many columns and lines a field has
+    val BOXPERCOLLIN: Int //defines how many boxes are locates in one line
+    val TOTALNUMBEROFCELLS: Int //defines the total number of cells a field has
     var field: Array<IntArray>
 
     /**
@@ -21,12 +19,12 @@ class SudokuField {
     constructor(field: Array<IntArray>) {
         val y_size = field.size
         val x_size = field[0].size
-        if (Math.sqrt(y_size.toDouble()) % 1 != 0.0 ||
+        if (sqrt(y_size.toDouble()) % 1 != 0.0 ||
             Math.sqrt(x_size.toDouble()) % 1 != 0.0
         ) throw IllegalFieldSizeException("The field size has to be a number to the power of two.")
         if (y_size != x_size) throw IllegalFieldSizeException("The field x_size and y_size has to be the same.")
         COLLIN = x_size
-        BOXPERCOLLIN = Math.sqrt(COLLIN.toDouble()).toInt()
+        BOXPERCOLLIN = sqrt(COLLIN.toDouble()).toInt()
         TOTALNUMBEROFCELLS = COLLIN * COLLIN
         this.field = field
     }
@@ -38,7 +36,7 @@ class SudokuField {
      * @param colLin: number if columns or lines the field should have
      */
     constructor(colLin: Int) {
-        if (Math.sqrt(colLin.toDouble()) % 1 != 0.0) throw IllegalFieldSizeException("The field size has to be a number to the power of two.")
+        if (sqrt(colLin.toDouble()) % 1 != 0.0) throw IllegalFieldSizeException("The field size has to be a number to the power of two.")
         COLLIN = colLin
         BOXPERCOLLIN = Math.sqrt(COLLIN.toDouble()).toInt()
         TOTALNUMBEROFCELLS = COLLIN * COLLIN

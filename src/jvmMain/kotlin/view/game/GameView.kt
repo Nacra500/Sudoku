@@ -1,9 +1,7 @@
 package view.game
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.*
@@ -26,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun GameView(vm: GameViewModel) {
@@ -47,7 +46,7 @@ fun GameView(vm: GameViewModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) { //title
-                Text("Sudoku")
+                Text("Sudoku", modifier = Modifier.onClick { vm.updatePoints(1000) })
             }
             Row(
                 modifier = Modifier
@@ -86,26 +85,26 @@ fun GameView(vm: GameViewModel) {
                 }
 
                 Column {
-                    CountUpTimer()
-                    EarningPoints(vm.uiState.value.points)
+                    CountUpTimer(vm)
+                    EarningPoints(vm)
 
-                    TextButton(onClick = { popupControl = true }) {
-                        Text("Hint")
+                    TextButton(onClick = { vm.getHint() }, enabled = gameUiState.points >= hintCosts) {
+                        Text(
+                            if (!gameUiState.win) "Hint" else "You won!",
+                            color = if (!gameUiState.win) Color.Unspecified else Color.Blue
+                        )
                     }
+
 
                     Button(
                         onClick = {
                             vm.submit()
                         }, modifier = Modifier
                             .align(Alignment.End)
-                            .run {
-                                if(vm.uiState.value.win)
-                                    this.background(color = Color.Red)
-                                else this
-                            }
                     ) {
-                        Text(if(vm.uiState.value.win) "Close" else "Submit")
+                        Text(if (vm.uiState.value.win) "Close" else "Submit")
                     }
+
 
                     Button(
                         onClick = {
@@ -122,27 +121,26 @@ fun GameView(vm: GameViewModel) {
 
 
 @Composable
-fun displayHint(){
+fun displayHint() {
 
 }
 
 @Composable
-fun buyHint(){
+fun buyHint() {
 
 }
 
 @Composable
-fun EarningPoints(points: Int){
-    var timePassed by remember { mutableStateOf(0) }
+fun EarningPoints(vm: GameViewModel) {
     LaunchedEffect(key1 = true) {
-        while (true) {
+        while (!vm.uiState.value.win) {
             delay(60000L)
-            timePassed++
+            vm.updatePoints(-5)
         }
     }
 
     Text(
-        text = "Points: "+(points-timePassed*10),
+        text = "Points: " + vm.uiState.value.points,
         fontSize = 30.sp,
         modifier = Modifier.padding(16.dp)
     )
@@ -154,6 +152,8 @@ fun SudokuGrid(
     selection: Pair<Int, Int>?,
     vm: GameViewModel
 ) {
+    var random by remember { mutableStateOf(vm.getRandomSeed()) }
+
     with(ComposeStyles.SudokuGridStyles) {
 
         val state = vm.uiState.value
@@ -180,23 +180,26 @@ fun SudokuGrid(
                                     if (fillAble) this.clickable { vm.selectField(i, j) } else this
                                 }.run {
                                     val selected = selection?.first == i && selection.second == j
-                                    val backgroundColor = when(state.mode?.name){
-                                            "Even-Odd" -> {
-                                                if(vm.uiState.value.fieldComplete[i][j] % 2 == 0 && Random.nextInt(1, 4) >= state.mode.selection.difficulty.selected.ordinal)
-                                                    if(selected) Color(0xFFc2fc03) else Color.Green
-                                                else
-                                                    if(selected) Color(0xFFffe0b3) else Color.White
-                                            }
-                                            "X-Sudoku" -> {
-                                                if(i == j || i == gridSize - j - 1)
-                                                    if(selected) Color(0xFF383eff) else Color(0xFF8286ff)
-                                                else
-                                                    if(selected) Color(0xFFffe0b3) else Color.White
-                                            }
-                                            else -> {
-                                                if(selected) Color(0xFFffe0b3) else Color.White
-                                            }
+                                    val backgroundColor = when (state.mode?.name) {
+                                        "Even-Odd" -> {
+                                            if (vm.uiState.value.fieldComplete[i][j] % 2 == 0 && random[i][j] >= state.mode.selection.difficulty.selected.ordinal
+                                            )
+                                                if (selected) Color(0xFFc2fc03) else Color.Green
+                                            else
+                                                if (selected) Color(0xFFffe0b3) else Color.White
                                         }
+
+                                        "X-Sudoku" -> {
+                                            if (i == j || i == gridSize - j - 1)
+                                                if (selected) Color(0xFF383eff) else Color(0xFF8286ff)
+                                            else
+                                                if (selected) Color(0xFFffe0b3) else Color.White
+                                        }
+
+                                        else -> {
+                                            if (selected) Color(0xFFffe0b3) else Color.White
+                                        }
+                                    }
                                     this.background(color = backgroundColor)
                                 },
                             contentAlignment = Alignment.Center
@@ -222,7 +225,7 @@ fun SudokuGrid(
 }
 
 @Composable
-fun GridDivider(heightDp: Dp, widthDp: Dp){
+fun GridDivider(heightDp: Dp, widthDp: Dp) {
     Divider(
         modifier = Modifier
             .height(heightDp)
@@ -246,7 +249,7 @@ fun GridDivider(heightDp: Dp, widthDp: Dp){
  */
 
 @Composable
-fun CountUpTimer() {
+fun CountUpTimer(vm: GameViewModel) {
     var timePassed by remember { mutableStateOf(0) }
     val timerText = remember {
         derivedStateOf {
@@ -255,7 +258,7 @@ fun CountUpTimer() {
     }
 
     LaunchedEffect(key1 = true) {
-        while (true) {
+        while (!vm.uiState.value.win) {
             delay(1000L)
             timePassed++
         }

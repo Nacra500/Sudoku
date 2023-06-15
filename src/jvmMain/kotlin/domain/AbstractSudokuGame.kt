@@ -38,7 +38,7 @@ internal abstract class AbstractSudokuGame(val size: SIZES, val difficulty: DIFF
      */
     protected fun create_start() {
         val entries = IntStream.rangeClosed(1, solutionField.COLLIN).boxed().collect(Collectors.toList())
-        Collections.shuffle(entries)
+        entries.shuffle()
         for (x in 0 until solutionField.COLLIN) {
             solutionField.setValue(x, 0, entries[x])
         }
@@ -107,13 +107,13 @@ internal abstract class AbstractSudokuGame(val size: SIZES, val difficulty: DIFF
     override fun getHint(field: SudokuField): SudokuCell? {
         val mistake = getMistake(field)
         return if (mistake != null) mistake else {
-            var generated = SudokuCell(0, 0, 0)
+            var generated = generator?.nextSolutionStep()
             while (field.getCellValue(
-                    generated!!.x,
-                    generated!!.y
+                    generated?.x ?: 0,
+                    generated?.y ?: 0
                 ) != SudokuField.EMPTY && generated != null
             ) {
-                generated = SudokuCell(0, 0, 0)
+                generated = generator?.nextSolutionStep()
             }
             generated
         }

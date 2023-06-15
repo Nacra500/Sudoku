@@ -101,13 +101,14 @@ abstract class AbstractSudokuGameFieldGenerator(protected var field: SudokuField
      * @return if the value can be found
      */
     protected abstract fun checkForObvious(x: Int, y: Int, `val`: Int): Boolean
-    val nextSolutionStep: SudokuCell?
+
+
         /**
          * gives last removed cell
          *
          * @return SudoCell with coordinates and coorect solution
          */
-        get() = try {
+        fun nextSolutionStep(): SudokuCell? = try {
             solutionSteps.pop()
         } catch (e: EmptyStackException) {
             null

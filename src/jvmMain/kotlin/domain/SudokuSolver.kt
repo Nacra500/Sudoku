@@ -1,13 +1,10 @@
 /**
  * Solver extending an AbstractSolver. Can be used to solve classical sudokus. Provides static methods containing the logical rules of a classical sudoku.
- */
-class SudokuSolver
-/**
  * instanciates a solver with a SudokuField which shall be solved.
  *
  * @param field
- */
-    (field: SudokuField) : AbstractSudokuSolver(field) {
+*/
+class SudokuSolver(field: SudokuField) : AbstractSudokuSolver(field) {
     /**
      * instance method checking if a value can be set on the instance field.
      *
@@ -16,7 +13,7 @@ class SudokuSolver
      * @param val: value which should be checked
      * @return if value can be set without violating the classical rules
      */
-    public override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
+    override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
         return checkValidInput(x, y, field, `val`)
     }
 

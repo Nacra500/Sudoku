@@ -1,4 +1,5 @@
 import domain.DIFFICULTIES
+import domain.GameModes
 import domain.SIZES
 
 /**
@@ -15,22 +16,11 @@ object GameFactory {
      * @param size
      * @return SudokuGame of the specified type with the specified size and difficulty
      */
-    fun getGame(difficulty: DIFFICULTIES, mode: GameMode?, size: SIZES): SudokuGame {
+    fun getGame(difficulty: DIFFICULTIES, mode: GameModes?, size: SIZES): SudokuGame {
         return when (mode) {
-            GameMode.XSUDOKU -> XSudokuGame(size, difficulty)
+            GameModes.XSUDOKU -> XSudokuGame(size, difficulty)
             else -> NormalSudokuGame(size, difficulty)
         }
-    }
-
-    /**
-     *
-     * Specifies the sudoku variant
-     *
-     */
-    enum class GameMode {
-        NORMAL,
-        EVENODD,
-        XSUDOKU
     }
 
 }

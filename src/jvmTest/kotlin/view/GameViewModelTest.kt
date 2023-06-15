@@ -32,12 +32,12 @@ class GameViewModelTest {
     }
 
     @Test
-    fun endGame() {
+    fun endGameLoose() {
         underTest.updatePoints(50)
 
         underTest.endGame()
 
-        assertEquals(NavigationParcel.Menu(50), navigationDummy.value)
+        assertEquals(NavigationParcel.Menu(0), navigationDummy.value)
     }
 
     @Test

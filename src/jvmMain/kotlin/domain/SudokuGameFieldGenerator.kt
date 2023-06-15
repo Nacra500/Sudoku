@@ -86,10 +86,10 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      */
     override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
         return SudokuSolver.Companion.checkValidInput(
-            x,
-            y,
-            field,
-            `val`
+            x = x,
+            y = y,
+            field = field,
+            `val` = `val`
         ) //this method equaly the already existing one of the solver which can be used
     }
 }
