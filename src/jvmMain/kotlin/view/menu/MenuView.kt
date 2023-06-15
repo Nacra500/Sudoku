@@ -21,6 +21,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,33 +119,29 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 
     Card(
         modifier = Modifier
-            .border(
-                2.dp,
-                if (type == selected) Color.Black else if (type.available) Color.Green else Color.Red,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(15.dp),
+            .padding(15.dp)
+            .clip(RoundedCornerShape(10)),
         elevation = 10.dp,
         //shape = RoundedCornerShape(20.dp),
         onClick = { vm.updateGameMode(type) }
 
 
     ) {
-        Column() {
-            Row() {
+        Column( horizontalAlignment = Alignment.CenterHorizontally) {
+
+
                 Image(
                     painter = painterResource("drawable/test.jpg"),
                     contentDescription = "Andy Rubin",
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10))
-                        .width(128.dp)
                 )
-            }
-            Row() {
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Box() {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(type.name)
+                        Text(type.name, modifier = Modifier.align(Alignment.CenterVertically))
                         if (!type.available) {
                             Icon(imageVector = Icons.Default.Lock, contentDescription = null)
                         }
@@ -170,18 +167,23 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     onClick = { vm.updateSize(type, i) },
                     modifier = Modifier
                         .width(90.dp)
-                        .border(
-                            0.dp,
-                            if (type.options.size.selected == i) Color.Black else if (i.ordinal <= type.options.size.available.ordinal) Color.Black else Color.Red
-                        ),
+                        ,
+
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = i.toString(),
-                                style = TextStyle(fontSize = 12.sp)
+                                style = TextStyle(fontSize = 12.sp),
+                                textAlign = TextAlign.Center
                             )
-                            if (i.ordinal > type.options.size.available.ordinal) {
+                            if (type.options.size.selected == i) {
+
+                            }
+                            else if(i.ordinal <= type.options.size.available.ordinal) {
+
+                                }
+                            else {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
@@ -199,10 +201,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     onClick = { vm.updateDifficult(type, i) },
                     modifier = Modifier
                         .width(90.dp)
-                        .border(
-                            0.dp,
-                            if (type.options.difficult.selected == i) Color.Black else if (i.ordinal <= type.options.difficult.available.ordinal) Color.Green else Color.Red
-                        ),
+                        ,
                 ) {
                     Box() {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -210,7 +209,13 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                                 text = i.toString(),
                                 style = TextStyle(fontSize = 12.sp)
                             )
-                            if (i.ordinal > type.options.difficult.available.ordinal) {
+                            if (type.options.difficult.selected == i){
+
+                            }
+                            else if (i.ordinal <= type.options.difficult.available.ordinal) {
+
+                            }
+                            else {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
