@@ -4,7 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-
+    id("org.jetbrains.dokka") version "1.8.20"
 }
 
 group = "com.example"
@@ -27,6 +27,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
                 implementation("androidx.navigation:navigation-compose:2.5.3")
+                implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.30")
             }
         }
         val jvmTest by getting{
