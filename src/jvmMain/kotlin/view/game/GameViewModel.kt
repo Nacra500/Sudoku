@@ -5,6 +5,7 @@ import GameFactory
 import NavigationParcel
 import NormalSudokuGame
 import SudokuGame
+import XSudokuGame
 import domain.SudokuGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,9 +39,12 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         println(modi)
         clearPoints()
         updatePoints(modi.costs)
-        engine = NormalSudokuGame(GameFactory.Size.LARGE, GameFactory.Difficulty.HARD)
+        engine = when(modi.name){
+            "X-Sudoku" -> XSudokuGame(GameFactory.Size.MEDIUM, GameFactory.Difficulty.HARD)
+            else -> NormalSudokuGame(GameFactory.Size.LARGE, GameFactory.Difficulty.EASY)
+        }
         _uiState.update { currentState ->
-            currentState.copy(field = engine.generate().field)
+            currentState.copy(field = engine.generate().field, fieldComplete = engine.solution.field, mode = modi)
         }
     }
 
@@ -149,9 +153,11 @@ private fun Pair<Int, Int>.moveField(key: Int) = when(key){
 
 data class GameUiState(
     var field: Array<IntArray> = emptyArray<IntArray>(),
+    var fieldComplete: Array<IntArray> = emptyArray<IntArray>(),
     var selection: Pair<Int, Int>? = null,
     val render: Boolean = false,
     val points: Int = 0,
+    val mode: GameMode? = null
 )
 
 val numKeyMap: Map<Int, Int> = mapOf(97 to 1, 98 to 2, 99 to 3, 100 to 4, 101 to 5, 102 to 6, 103 to 7,  104 to 8, 105 to 9, 49 to 1, 50 to 2, 51 to 3, 52 to 4, 53 to 5, 54 to 6, 55 to 7, 56 to 8, 57 to 9)

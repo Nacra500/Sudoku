@@ -57,17 +57,7 @@ fun GameView(vm: GameViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-
-                    // Sudoku grid (add a mode input to choose the function)
-                    val mode = "EvenOdd"
-                    val difficulty = 3
-
-                    when (mode) {
-                        // Generate a random value once
-                        "EvenOdd" -> SudokuGridEven(gameUiState.field, gameUiState.selection, vm, difficulty)
-                        "X" -> SudokuGridX(gameUiState.field, gameUiState.selection, vm)
-                        else -> SudokuGrid(gameUiState.field, gameUiState.selection, vm)
-                    }
+                    SudokuGrid(gameUiState.selection, vm)
 
                     /*if (popupControl) {
                         Popup(
@@ -155,12 +145,13 @@ fun EarningPoints(points: Int){
 
 @Composable
 fun SudokuGrid(
-    field: Array<IntArray>,
     selection: Pair<Int, Int>?,
     vm: GameViewModel
 ) {
     with(ComposeStyles.SudokuGridStyles) {
 
+        val state = vm.uiState.value
+        val field = state.field
         val gridSize = field.size
         val subGridSize = sqrt(gridSize.toDouble()).toInt()
         val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
@@ -174,10 +165,7 @@ fun SudokuGrid(
                     }
                     (field[i][j] <= 0).let { fillAble ->
                         Box(
-                            modifier = Modifier
-
-                                // add a highlight to the column + row the selected field is in
-
+                            modifier = Modifier // add a highlight to the column + row the selected field is in
                                 .size(30.dp)
                                 .border(
                                     width = normalBorderWidth,
@@ -185,9 +173,25 @@ fun SudokuGrid(
                                 ).run {
                                     if (fillAble) this.clickable { vm.selectField(i, j) } else this
                                 }.run {
-                                    if (selection?.first == i && selection.second == j) this.background(
-                                        Color(0xFFffe0b3)
-                                    ) else this
+                                    val selected = selection?.first == i && selection.second == j
+                                    val backgroundColor = when(state.mode?.name){
+                                            "Even-Odd" -> {
+                                                if(vm.uiState.value.fieldComplete[i][j] % 2 == 0 && Random.nextInt(1, 3) >= state.mode.options.difficult.selected.ordinal)
+                                                    if(selected) Color(0xFFc2fc03) else Color.Green
+                                                else
+                                                    if(selected) Color(0xFFffe0b3) else Color.White
+                                            }
+                                            "X-Sudoku" -> {
+                                                if(i == j || i == gridSize - j - 1)
+                                                    if(selected) Color(0xFF383eff) else Color(0xFF8286ff)
+                                                else
+                                                    if(selected) Color(0xFFffe0b3) else Color.White
+                                            }
+                                            else -> {
+                                                if(selected) Color(0xFFffe0b3) else Color.White
+                                            }
+                                        }
+                                    this.background(color = backgroundColor)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -210,136 +214,6 @@ fun SudokuGrid(
         GridDivider(thickBorderWidth, gridWidth)
     }
 }
-
-
-@Composable
-fun SudokuGridX(field: Array<IntArray>, selection: Pair<Int, Int>?, vm: GameViewModel) {
-    with(ComposeStyles.SudokuGridStyles) {
-
-        val gridSize = field.size
-        val subGridSize = sqrt(gridSize.toDouble()).toInt()
-        val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
-
-        for (i in field.indices) {
-            if (i % subGridSize == 0) GridDivider(thickBorderWidth, gridWidth)
-            Row() {
-                for (j in field[i].indices) {
-                    if (j % subGridSize == 0) {
-                        GridDivider(boxSize, thickBorderWidth)
-                    }
-                    (field[i][j] <= 0).let { fillAble ->
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .border(
-                                    width = normalBorderWidth,
-                                    color = Color.Black,
-                                ).run {
-                                    if (fillAble) this.clickable { vm.selectField(i, j) } else this
-                                }.run {
-                                    when {
-                                        i == j || i == gridSize - j - 1 -> this.background(Color.Blue) // Change the background to blue when i == j or i == gridSize - j - 1
-                                        selection?.first == i && selection.second == j -> this.background(Color(0xFFffe0b3))
-                                        else -> this
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                fontWeight = if (!fillAble) FontWeight.ExtraBold else null,
-                                text = if (field[i][j] == 0) ""
-                                else field[i][j].absoluteValue.toString(),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .height(textSize)
-                                    .fillMaxSize(),
-                                color = if (fillAble) textColorPrimary else textColorSecondary
-                            )
-                        }
-                    }
-                }
-                GridDivider(boxSize, thickBorderWidth)
-            }
-        }
-        GridDivider(thickBorderWidth, gridWidth)
-    }
-}
-
-
-@Composable
-fun SudokuGridEven(
-    field: Array<IntArray>,
-    selection: Pair<Int, Int>?,
-    vm: GameViewModel,
-    difficulty: Int) {
-    with(ComposeStyles.SudokuGridStyles) {
-
-        val completeField = field //delete after adding completeField: Array<Array<Int>> to input
-
-        val gridSize = field.size
-        val subGridSize = sqrt(gridSize.toDouble()).toInt()
-        val gridWidth = ((boxSize.value + normalBorderWidth.value) * gridSize + thickBorderWidth.value * subGridSize).dp
-
-        val highlightThreshold = when (difficulty) {
-            1 -> 1.0
-            2 -> 0.7
-            3 -> 0.5
-            else -> throw IllegalArgumentException("Mode must be 1, 2, or 3")
-        }
-
-        for (i in field.indices) {
-            if (i % subGridSize == 0) GridDivider(thickBorderWidth, gridWidth)
-            Row() {
-                for (j in field[i].indices) {
-                    if (j % subGridSize == 0) {
-                        GridDivider(boxSize, thickBorderWidth)
-                    }
-                    (field[i][j] <= 0).let { fillAble ->
-                        val randomValue = remember { Random.nextDouble() }
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .border(
-                                    width = normalBorderWidth,
-                                    color = Color.Black,
-                                ).run {
-                                    if (fillAble) this.clickable { vm.selectField(i, j) } else this
-                                }.run {
-                                    when {
-                                        completeField[i][j] % 2 == 0 && randomValue <= highlightThreshold -> this.background(
-                                            Color.Green
-                                        ) // Change the background to green when the number in completeField is even and a random number is below the threshold
-                                        selection?.first == i && selection.second == j -> this.background(
-                                            Color(
-                                                0xFFffe0b3
-                                            )
-                                        )
-
-                                        else -> this
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                fontWeight = if (!fillAble) FontWeight.ExtraBold else null,
-                                text = if (field[i][j] == 0) ""
-                                else field[i][j].absoluteValue.toString(),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .height(textSize)
-                                    .fillMaxSize(),
-                                color = if (fillAble) textColorPrimary else textColorSecondary
-                            )
-                        }
-                    }
-                }
-                GridDivider(boxSize, thickBorderWidth)
-            }
-        }
-        GridDivider(thickBorderWidth, gridWidth)
-    }
-}
-
 
 @Composable
 fun GridDivider(heightDp: Dp, widthDp: Dp){
