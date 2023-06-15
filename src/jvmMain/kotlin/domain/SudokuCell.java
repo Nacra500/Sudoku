@@ -1,4 +1,6 @@
-
+/**
+ * class which can be used as a return value. Describes all important attributes a Cell has (coordinates and value)
+ */
 public class SudokuCell {
 
 	public int x;
