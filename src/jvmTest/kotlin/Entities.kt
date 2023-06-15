@@ -1,11 +1,11 @@
-import domain.DIFFICULT
+import domain.DIFFICULTIES
 import domain.Mode1
 import domain.SIZES
 
 val GAME_MODE = Mode1()
-val GAME_MODE_BIG = Mode1().apply { options.size.selected = SIZES.BIG }
-val GAME_MODE_HARD = Mode1().apply { options.difficult.selected = DIFFICULT.HARD }
-val GAME_MODE_BIG_BOUGHT = Mode1().apply { options.size.available = SIZES.BIG }
+val GAME_MODE_BIG = Mode1().apply { selection.size.selected = SIZES.BIG }
+val GAME_MODE_HARD = Mode1().apply { selection.difficulty.selected = DIFFICULTIES.HARD }
+val GAME_MODE_BIG_BOUGHT = Mode1().apply { selection.size.available = SIZES.BIG }
 
 val PLAYFIELD_3: Array<Array<Int>> = arrayOf(
     arrayOf(8, 0, 3, 0, 9, 4, 7, 5, 1),

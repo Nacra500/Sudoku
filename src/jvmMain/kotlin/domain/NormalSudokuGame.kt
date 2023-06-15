@@ -1,9 +1,10 @@
-import GameFactory.Difficulty
+import domain.DIFFICULTIES
+import domain.SIZES
 
 /**
  * the classical Version of a sudoku game extending the abstract SudokuGame
  */
-internal class NormalSudokuGame(size: GameFactory.Size, difficulty: Difficulty) : AbstractSudokuGame(size, difficulty) {
+internal class NormalSudokuGame(size: SIZES, difficulty: DIFFICULTIES) : AbstractSudokuGame(size, difficulty) {
     /**
      * instanciates the classical SudokuSolver
      * please find more information in the abstract sudoku game

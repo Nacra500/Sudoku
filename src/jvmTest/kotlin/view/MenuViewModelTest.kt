@@ -5,7 +5,7 @@ import GAME_MODE_BIG
 import GAME_MODE_BIG_BOUGHT
 import GAME_MODE_HARD
 import NavigationParcel
-import domain.DIFFICULT
+import domain.DIFFICULTIES
 import domain.SIZES
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.jupiter.api.BeforeEach
@@ -43,14 +43,14 @@ class MenuViewModelTest {
     fun updateSize() {
         underTest.updateSize(GAME_MODE, SIZES.BIG)
 
-        assertEquals(GAME_MODE_BIG.options.size, underTest.uiState.value.gameModes[0].options.size)
+        assertEquals(GAME_MODE_BIG.selection.size, underTest.uiState.value.gameModes[0].selection.size)
     }
 
     @Test
     fun updateDifficult() {
-        underTest.updateDifficult(GAME_MODE, DIFFICULT.HARD)
+        underTest.updateDifficult(GAME_MODE, DIFFICULTIES.HARD)
 
-        assertEquals(GAME_MODE_HARD.options.difficult, underTest.uiState.value.gameModes[0].options.difficult)
+        assertEquals(GAME_MODE_HARD.selection.difficulty, underTest.uiState.value.gameModes[0].selection.difficulty)
     }
 
     @Test
@@ -86,7 +86,7 @@ class MenuViewModelTest {
 
             underTest.buttonPressed()
 
-            assertEquals(GAME_MODE_BIG_BOUGHT.options.size.available, underTest.uiState.value.gameModes[0].options.size.selected)
+            assertEquals(GAME_MODE_BIG_BOUGHT.selection.size.available, underTest.uiState.value.gameModes[0].selection.size.selected)
         }
     }
 

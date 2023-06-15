@@ -21,7 +21,6 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
 
     private var _uiState = MutableStateFlow(MenuUiState())
     val uiState: StateFlow<MenuUiState> = _uiState.asStateFlow()
-
     init {
         updateButton()
     }
@@ -54,7 +53,7 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
      */
     fun updateSize(gameMode: GameMode, i: SIZES) {
         val newState = _uiState.value.copy()
-        newState.gameModes.find { it.name == gameMode.name }?.options?.size?.selected = i
+        newState.gameModes.find { it.name == gameMode.name }?.selection?.size?.selected = i
         _uiState.update { currentState ->
             currentState.copy(gameModes = newState.gameModes, render = !newState.render)
         }
@@ -68,9 +67,9 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
      * @param  GameMode  selected game mode for which new size is applicable
      * @param  DIFFICULT  new chosen difficulty as ENUM
      */
-    fun updateDifficult(gameMode: GameMode, i: DIFFICULT) {
+    fun updateDifficult(gameMode: GameMode, i: DIFFICULTIES) {
         val newState = _uiState.value.copy()
-        newState.gameModes.find { it.name == gameMode.name }?.options?.difficult?.selected = i
+        newState.gameModes.find { it.name == gameMode.name }?.selection?.difficulty?.selected = i
         _uiState.update { currentState ->
             currentState.copy(gameModes = newState.gameModes, render = !newState.render)
         }
@@ -106,8 +105,8 @@ class MenuViewModel(var di: MutableStateFlow<NavigationParcel>) {
                 if(!this.available){
                     this.available = true
                 }else{
-                    this.options.difficult.available = this.options.difficult.selected
-                    this.options.size.available = this.options.size.selected
+                    this.selection.difficulty.available = this.selection.difficulty.selected
+                    this.selection.size.available = this.selection.size.selected
                 }
             }
             _uiState.update { currentState ->

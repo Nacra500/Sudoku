@@ -24,7 +24,7 @@ interface SudokuGame {
      * @param y: y coordinate of cell
      * @param val: value which should be checked
      * @param field: Sudokufield in which the value should be checked
-     * @return if value can be set accoring the game rules. (Does not check in solution.)
+     * @return if value can be set according the game rules. (Does not check in solution.)
      */
     fun checkValidInput(x: Int, y: Int, `val`: Int, field: SudokuField?): Boolean
 

@@ -1,4 +1,5 @@
-import GameFactory.Difficulty
+import domain.DIFFICULTIES
+import domain.SIZES
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
@@ -6,20 +7,13 @@ import java.util.stream.IntStream
 /**
  * an abstract version of an SudokuGames priving a general default implementations for all SudokuGames
  */
-internal abstract class AbstractSudokuGame(size: GameFactory.Size, difficulty: Difficulty) : SudokuGame {
-    val DIFFICULTY: Difficulty
-    val SIZE: GameFactory.Size
-    private val solver // contains the specific solver for the game
-            : AbstractSudokuSolver
+internal abstract class AbstractSudokuGame(val size: SIZES, val difficulty: DIFFICULTIES) : SudokuGame {
+    private val solver: AbstractSudokuSolver // contains the specific solver for the game
     private var generator: AbstractSudokuGameFieldGenerator? = null // contains the specific generator for the game
-    private val solutionField // sudoku field containing the solution for specifed problem
-            : SudokuField
+    private val solutionField: SudokuField = SudokuField(size.COLLIN) // sudoku field containing the solution for specifed problem
 
     init {
-        solutionField = SudokuField(size.COLLLIN)
-        solver = initiateSolver(solutionField)
-        DIFFICULTY = difficulty
-        SIZE = size
+        solver = this.initiateSolver(solutionField)
     }
 
     /**
@@ -78,7 +72,7 @@ internal abstract class AbstractSudokuGame(size: GameFactory.Size, difficulty: D
         solutionField.displayInConsole()
         val gameField = SudokuField(solutionField)
         generator = SudokuGameFieldGenerator(gameField)
-        val removeCount = gameField.TOTALNUMBEROFCELLS * DIFFICULTY.percentShown / 100
+        val removeCount = gameField.TOTALNUMBEROFCELLS * difficulty.percentShown / 100
         generator!!.createSolvable(removeCount)
         return gameField
     }

@@ -10,33 +10,34 @@ package domain
  */
 abstract class GameMode{
     abstract val name: String
-    val options: GameOptions = GameOptions()
+    open val availableSizes: Array<SIZES> = SIZES.values()
+    open val selection: Selection = Selection()
     open var available: Boolean = false
     abstract val multiplicator: Float
     val costs: Int
         get() {
-            val diffAvailable = options.difficult.selected.ordinal <= options.difficult.available.ordinal
-            val sizeAvailable = options.size.selected.ordinal <= options.size.available.ordinal
+            val diffAvailable = selection.difficulty.selected.ordinal <= selection.difficulty.available.ordinal
+            val sizeAvailable = selection.size.selected.ordinal <= selection.size.available.ordinal
             return if(!available) -500 else ((
                     when{
-                        diffAvailable && sizeAvailable -> multiplicator*(options.difficult.selected.ordinal+1+options.size.selected.ordinal+1)
-                        !diffAvailable && sizeAvailable -> if((options.difficult.selected.ordinal - options.difficult.available.ordinal) > 1) -multiplicator*(options.difficult.selected.ordinal+2.5) else -multiplicator*(options.difficult.selected.ordinal+1)
-                        diffAvailable && !sizeAvailable -> if((options.size.selected.ordinal - options.size.available.ordinal) > 1) -multiplicator*(options.size.selected.ordinal+2.5) else -multiplicator*(options.size.selected.ordinal+1)
-                        else -> -multiplicator*(options.size.selected.ordinal+1+options.difficult.selected.ordinal+1)
+                        diffAvailable && sizeAvailable -> multiplicator*(selection.difficulty.selected.ordinal+1+selection.size.selected.ordinal+1)
+                        !diffAvailable && sizeAvailable -> if((selection.difficulty.selected.ordinal - selection.difficulty.available.ordinal) > 1) -multiplicator*(selection.difficulty.selected.ordinal+2.5) else -multiplicator*(selection.difficulty.selected.ordinal+1)
+                        diffAvailable && !sizeAvailable -> if((selection.size.selected.ordinal - selection.size.available.ordinal) > 1) -multiplicator*(selection.size.selected.ordinal+2.5) else -multiplicator*(selection.size.selected.ordinal+1)
+                        else -> -multiplicator*(selection.size.selected.ordinal+1+selection.difficulty.selected.ordinal+1)
                     }
                     ).toInt()*100)
         }
 }
 
-data class GameOptions(
-    var size: GameOptionsItem<SIZES> = GameOptionsItem(SIZES.SMALL, SIZES.SMALL),
-    var difficult: GameOptionsItem<DIFFICULT> = GameOptionsItem(DIFFICULT.EASY, DIFFICULT.EASY)
+data class Selection(
+    var size: GameOptionsItem<SIZES> = GameOptionsItem(SIZES.NORMAL, SIZES.NORMAL),
+    var difficulty: GameOptionsItem<DIFFICULTIES> = GameOptionsItem(DIFFICULTIES.EASY, DIFFICULTIES.EASY)
 )
 
 data class GameOptionsItem<T>(var selected: T, var available: T)
 
-enum class SIZES{SMALL, NORMAL, BIG}
-enum class DIFFICULT{EASY, NORMAL, HARD}
+enum class SIZES(val COLLIN: Int) {NORMAL(9), BIG(16)}
+enum class DIFFICULTIES(val percentShown: Int){EASY(30), NORMAL(40), HARD(75)}
 
 class Mode1 : GameMode() {
     override val name = "Klassiker"
@@ -50,4 +51,5 @@ class Mode2 : GameMode() {
 class Mode3 : GameMode() {
     override val name: String = "X-Sudoku"
     override val multiplicator = 3f
+    override val availableSizes = arrayOf(SIZES.NORMAL)
 }

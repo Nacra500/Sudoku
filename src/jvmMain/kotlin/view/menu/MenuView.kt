@@ -3,7 +3,6 @@ package view.menu
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,9 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import domain.DIFFICULT
+import domain.DIFFICULTIES
 import domain.GameMode
-import domain.SIZES
 
 @Composable
 @Preview
@@ -128,10 +126,8 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 
     ) {
         Column( horizontalAlignment = Alignment.CenterHorizontally) {
-
-
                 Image(
-                    painter = painterResource("drawable/test.jpg"),
+                    painter = painterResource("drawable/"+type.name+".png"),
                     contentDescription = "Andy Rubin",
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
@@ -162,13 +158,11 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
     Column() {
 
         Row {
-            for (i in SIZES.values()) {
+            for (i in type.availableSizes) {
                 Chip(
                     onClick = { vm.updateSize(type, i) },
                     modifier = Modifier
-                        .width(90.dp)
-                        ,
-
+                        .width(90.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -177,18 +171,14 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                                 style = TextStyle(fontSize = 12.sp),
                                 textAlign = TextAlign.Center
                             )
-                            if (type.options.size.selected == i) {
-
-                            }
-                            else if(i.ordinal <= type.options.size.available.ordinal) {
-
+                            if (type.selection.size.selected != i) {
+                                if (i.ordinal > type.selection.size.available.ordinal) {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
-                            else {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
                             }
                         }
                     }
@@ -196,7 +186,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
             }
         }
         Row {
-            for (i in DIFFICULT.values()) {
+            for (i in DIFFICULTIES.values()) {
                 Chip(
                     onClick = { vm.updateDifficult(type, i) },
                     modifier = Modifier
@@ -209,18 +199,14 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                                 text = i.toString(),
                                 style = TextStyle(fontSize = 12.sp)
                             )
-                            if (type.options.difficult.selected == i){
-
-                            }
-                            else if (i.ordinal <= type.options.difficult.available.ordinal) {
-
-                            }
-                            else {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
+                            if (type.selection.difficulty.selected != i) {
+                                if (i.ordinal > type.selection.difficulty.available.ordinal) {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
                             }
                         }
                     }
