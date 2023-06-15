@@ -1,29 +1,26 @@
+import GameFactory.Difficulty
+
 /**
- *  the x sudoku Version of a sudoku game extending the abstract SudokuGame
+ * the x sudoku Version of a sudoku game extending the abstract SudokuGame
  */
-class XSudokuGame extends AbstractSudokuGame {
-	public static final GameFactory.GameMode GAMEMODE = GameFactory.GameMode.XSUDOKU;
-	
-	public XSudokuGame(GameFactory.Size size, GameFactory.Difficulty difficulty) {
-		super(size, difficulty);
-	}
+internal class XSudokuGame(size: GameFactory.Size, difficulty: Difficulty) : AbstractSudokuGame(size, difficulty) {
+    /**
+     * instanciates the x SudokuSolver
+     * please find more information in the abstract sudoku game
+     */
+    override fun initiateSolver(solutionField: SudokuField): AbstractSudokuSolver {
+        return XSudokuSolver(solutionField)
+    }
 
-	/**
-	 * instanciates the x SudokuSolver
-	 * please find more information in the abstract sudoku game
-	 */
-	@Override
-	protected AbstractSudokuSolver initiateSolver(SudokuField solutionField) {
-		return new XSudokuSolver(solutionField);
-	}
+    /**
+     * instanciates the c Sudoku generator
+     * please find more information in the abstract sudoku game
+     */
+    override fun initiateGenerator(gameField: SudokuField): AbstractSudokuGameFieldGenerator {
+        return XSudokuGameFieldGenerator(gameField)
+    }
 
-	/**
-	 * instanciates the c Sudoku generator
-	 * please find more information in the abstract sudoku game
-	 */
-	@Override
-	protected AbstractSudokuGameFieldGenerator initiateGenerator(SudokuField gameField) {
-		return new XSudokuGameFieldGenerator(gameField);
-	}
-	
+    companion object {
+        val GAMEMODE = GameFactory.GameMode.XSUDOKU
+    }
 }

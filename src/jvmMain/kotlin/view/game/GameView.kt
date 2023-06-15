@@ -18,25 +18,13 @@ import kotlin.random.Random
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.Button
-import androidx.compose.ui.window.Popup
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.IntOffset
-
-import domain.SudokuGenerator
-import org.jetbrains.skia.paragraph.TextBox
 
 @Composable
 @Preview
@@ -167,7 +155,7 @@ fun EarningPoints(points: Int){
 
 @Composable
 fun SudokuGrid(
-    field: Array<Array<Int>>,
+    field: Array<IntArray>,
     selection: Pair<Int, Int>?,
     vm: GameViewModel
 ) {
@@ -225,7 +213,7 @@ fun SudokuGrid(
 
 
 @Composable
-fun SudokuGridX(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameViewModel) {
+fun SudokuGridX(field: Array<IntArray>, selection: Pair<Int, Int>?, vm: GameViewModel) {
     with(ComposeStyles.SudokuGridStyles) {
 
         val gridSize = field.size
@@ -280,7 +268,7 @@ fun SudokuGridX(field: Array<Array<Int>>, selection: Pair<Int, Int>?, vm: GameVi
 
 @Composable
 fun SudokuGridEven(
-    field: Array<Array<Int>>,
+    field: Array<IntArray>,
     selection: Pair<Int, Int>?,
     vm: GameViewModel,
     difficulty: Int) {

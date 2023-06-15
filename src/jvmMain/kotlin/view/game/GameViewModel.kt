@@ -1,6 +1,10 @@
 package view.game
 
+import AbstractSudokuGame
+import GameFactory
 import NavigationParcel
+import NormalSudokuGame
+import SudokuGame
 import domain.SudokuGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +26,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
     private var _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
-    private lateinit var engine: SudokuGenerator
+    private lateinit var engine: SudokuGame
 
     /**
      * Uses the Sudoku Generator to generate according
@@ -34,10 +38,9 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         println(modi)
         clearPoints()
         updatePoints(modi.costs)
-        engine = SudokuGenerator()
-        engine.TimsSudokuField2(3)
+        engine = NormalSudokuGame(GameFactory.Size.LARGE, GameFactory.Difficulty.HARD)
         _uiState.update { currentState ->
-            currentState.copy(field = engine.field)
+            currentState.copy(field = engine.generate().field)
         }
     }
 
@@ -98,7 +101,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      *
      * @param  Array<Array<Int>>  the new game field to be set
      */
-    fun updateField(newValue: Array<Array<Int>>){
+    fun updateField(newValue: Array<IntArray>){
         _uiState.update { currentState ->
             currentState.copy(field = newValue, render = !_uiState.value.render)
         }
@@ -130,7 +133,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
  * @param Array<Array<Int>> the game field
  * @return boolean which states of selection is inside of game borders
  */
-private fun Pair<Int, Int>.testInBorders(field: Array<Array<Int>>): Boolean = first in field.indices && second in 0 until field[0].size
+private fun Pair<Int, Int>.testInBorders(field: Array<IntArray>): Boolean = first in field.indices && second in 0 until field[0].size
 
 /**
  * @param Int the arrow value of the keyevent
@@ -145,7 +148,7 @@ private fun Pair<Int, Int>.moveField(key: Int) = when(key){
 }
 
 data class GameUiState(
-    var field: Array<Array<Int>> = emptyArray<Array<Int>>(),
+    var field: Array<IntArray> = emptyArray<IntArray>(),
     var selection: Pair<Int, Int>? = null,
     val render: Boolean = false,
     val points: Int = 0,
