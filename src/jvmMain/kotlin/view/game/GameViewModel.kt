@@ -2,6 +2,7 @@ package view.game
 
 import NavigationParcel
 import NormalSudokuGame
+import SudokuField
 import SudokuGame
 import XSudokuGame
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import domain.GameMode
+import domain.SIZES
+import kotlin.math.abs
+import kotlin.random.Random
 
 /**
  * The GameViewModel which orchestrates the user interface in regards of
@@ -36,12 +40,14 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         println(modi)
         clearPoints()
         updatePoints(modi.costs)
-        engine = when(modi.name){
-            "X-Sudoku" -> XSudokuGame(modi.selection.size.selected, modi.selection.difficulty.selected)
-            else -> NormalSudokuGame(modi.selection.size.selected, modi.selection.difficulty.selected)
-        }
+        engine = GameFactory.getGame(modi.selection.difficulty.selected, modi.mode, modi.selection.size.selected)
         _uiState.update { currentState ->
-            currentState.copy(field = engine.generate().field, fieldComplete = engine.solution.field, mode = modi, win = false)
+            currentState.copy(
+                field = engine.generate().field,
+                fieldComplete = engine.solution.field,
+                mode = modi,
+                win = false
+            )
         }
     }
 
@@ -50,7 +56,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      * the earned points information
      */
     fun endGame() {
-        di.value = NavigationParcel.Menu(if(uiState.value.win) _uiState.value.points else 0)
+        di.value = NavigationParcel.Menu(if (uiState.value.win) _uiState.value.points else 0)
     }
 
     /**
@@ -69,30 +75,35 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      * Tackles user input via the keyboard
      * Actions are split in three categories represented by three keyMaps
      * numKeyMap: Filters for number input which updates the game field
+     *            When Field is big and a one is inputted it allows the input of bigger numbers
      * navKeyMap: Filters for arrow input which updates the selection field to the next available one
      * deletionKey: Filters for backspace and deletes user input in selected field
      *
      * @param  Int  the identifier of the pressed key
      */
     fun keyEvent(key: Int): Boolean {
-        _uiState.value.selection?.run{
+        _uiState.value.selection?.run {
             val field = _uiState.value.field
             println(key)
             numKeyMap[key]?.let {
-                field[this.first][this.second] = -it
+                field[this.first][this.second] =
+                    if (uiState.value.mode?.selection?.size?.selected == SIZES.BIG && field[this.first][this.second] == -1)
+                        field[this.first][this.second] * 10 - it
+                    else -it
                 updateField(field)
             } ?: navKeyMap[key]?.let {
                 var newValue = this.moveField(it)
-                while(newValue.testInBorders(field) && field[newValue.first][newValue.second] > 0){
+                while (newValue.testInBorders(field) && field[newValue.first][newValue.second] > 0) {
                     newValue = newValue.moveField(it)
                 }
-                if(newValue.testInBorders(_uiState.value.field)){
+                if (newValue.testInBorders(_uiState.value.field)) {
                     selectField(newValue.first, newValue.second)
                 }
-            } ?: if(key == 127){
+            } ?: if (key == 127) {
                 field[this.first][this.second] = 0
                 updateField(field)
-            }else{ }
+            } else {
+            }
         }
         return true
     }
@@ -102,7 +113,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      *
      * @param  Array<Array<Int>>  the new game field to be set
      */
-    fun updateField(newValue: Array<IntArray>){
+    fun updateField(newValue: Array<IntArray>) {
         _uiState.update { currentState ->
             currentState.copy(field = newValue, render = !_uiState.value.render)
         }
@@ -114,16 +125,16 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      *
      * @param  Int  difference of the points to be set
      */
-    fun updatePoints(diff: Int){
+    fun updatePoints(diff: Int) {
         _uiState.update { currentState ->
-            currentState.copy(points = uiState.value.points+diff)
+            currentState.copy(points = uiState.value.points + diff)
         }
     }
 
     /**
      * Sets the points to zero
      */
-     fun clearPoints(){
+    fun clearPoints() {
         _uiState.update { currentState ->
             currentState.copy(points = 0)
         }
@@ -134,15 +145,53 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      * valid solution. If it was successfully the user can end the game and gets the points granted.
      */
     fun submit() {
-        if(uiState.value.win){
+        if (uiState.value.win) {
             endGame()
-        }else{
-            if(uiState.value.fieldComplete.contentEquals(uiState.value.field)){
+        } else {
+            var solved = true
+            for (i in uiState.value.field.indices) {
+                for (j in uiState.value.field[i].indices) {
+                    if (uiState.value.fieldComplete[i][j] != abs(uiState.value.field[i][j]))
+                        solved = false
+                }
+            }
+            if (solved) {
                 _uiState.update { currentState ->
                     currentState.copy(win = true)
                 }
             }
         }
+    }
+
+    /**
+     * Uses the game Engine provided method for getting a hint for one random cell and reduces the points
+     */
+    fun getHint() {
+        if (uiState.value.points >= hintCosts) {
+            uiState.value.field.let {
+                val newValue = it
+                engine.getHint(SudokuField(it))?.let { cell ->
+                    newValue[cell.y][cell.x] = cell.`val`
+                    updatePoints(-hintCosts)
+                }
+                updateField(newValue)
+            }
+        }
+    }
+
+    /**
+     * Generates a field sized array helding random values that are used for deciding
+     * in Even Odd games which fields are marked
+     * @return Array<IntArray> two dimensional array of random integers
+     */
+    fun getRandomSeed(): Array<IntArray> {
+        val randomSeed = Array(uiState.value.field.size) { IntArray(uiState.value.field.size) }
+        for (i in 0 until uiState.value.field.size) {
+            for (j in 0 until uiState.value.field.size) {
+                randomSeed[i][j] = Random.nextInt(1, 3)
+            }
+        }
+        return randomSeed
     }
 }
 
@@ -150,13 +199,14 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
  * @param Array<Array<Int>> the game field
  * @return boolean which states of selection is inside of game borders
  */
-private fun Pair<Int, Int>.testInBorders(field: Array<IntArray>): Boolean = first in field.indices && second in 0 until field[0].size
+private fun Pair<Int, Int>.testInBorders(field: Array<IntArray>): Boolean =
+    first in field.indices && second in 0 until field[0].size
 
 /**
  * @param Int the arrow value of the keyevent
  * @return the new selection coordinates after going in direction of arrow keypress event
  */
-private fun Pair<Int, Int>.moveField(key: Int) = when(key){
+private fun Pair<Int, Int>.moveField(key: Int) = when (key) {
     1 -> this.copy(second = this.second - 1)
     2 -> this.copy(first = this.first - 1)
     3 -> this.copy(second = this.second + 1)
@@ -174,5 +224,28 @@ data class GameUiState(
     val win: Boolean = false
 )
 
-val numKeyMap: Map<Int, Int> = mapOf(97 to 1, 98 to 2, 99 to 3, 100 to 4, 101 to 5, 102 to 6, 103 to 7,  104 to 8, 105 to 9, 49 to 1, 50 to 2, 51 to 3, 52 to 4, 53 to 5, 54 to 6, 55 to 7, 56 to 8, 57 to 9)
+val numKeyMap: Map<Int, Int> = mapOf(
+    96 to 0,
+    97 to 1,
+    98 to 2,
+    99 to 3,
+    100 to 4,
+    101 to 5,
+    102 to 6,
+    103 to 7,
+    104 to 8,
+    105 to 9,
+    48 to 0,
+    49 to 1,
+    50 to 2,
+    51 to 3,
+    52 to 4,
+    53 to 5,
+    54 to 6,
+    55 to 7,
+    56 to 8,
+    57 to 9
+)
 val navKeyMap: Map<Int, Int> = mapOf(37 to 1, 38 to 2, 39 to 3, 40 to 4)
+
+val hintCosts = 50

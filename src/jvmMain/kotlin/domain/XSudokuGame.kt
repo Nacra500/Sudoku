@@ -1,4 +1,5 @@
 import domain.DIFFICULTIES
+import domain.GameModes
 import domain.SIZES
 
 /**
@@ -19,9 +20,5 @@ internal class XSudokuGame(size: SIZES, difficulty: DIFFICULTIES) : AbstractSudo
      */
     override fun initiateGenerator(gameField: SudokuField): AbstractSudokuGameFieldGenerator {
         return XSudokuGameFieldGenerator(gameField)
-    }
-
-    companion object {
-        val GAMEMODE = GameFactory.GameMode.XSUDOKU
     }
 }

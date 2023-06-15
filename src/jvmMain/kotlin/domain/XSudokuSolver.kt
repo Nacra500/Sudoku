@@ -10,7 +10,7 @@ class XSudokuSolver(field: SudokuField) : AbstractSudokuSolver(field) {
      * @param val: value which should be checked
      * @return if value can be set without violating the x sudoku rules
      */
-    public override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
+    override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
         return checkValidInput(x, y, super.field, `val`)
     }
 

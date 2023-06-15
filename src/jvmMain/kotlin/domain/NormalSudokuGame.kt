@@ -20,8 +20,4 @@ internal class NormalSudokuGame(size: SIZES, difficulty: DIFFICULTIES) : Abstrac
     override fun initiateGenerator(gameField: SudokuField): AbstractSudokuGameFieldGenerator {
         return SudokuGameFieldGenerator(gameField)
     }
-
-    companion object {
-        val GAMEMODE = GameFactory.GameMode.NORMAL
-    }
 }

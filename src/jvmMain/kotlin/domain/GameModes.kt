@@ -10,6 +10,7 @@ package domain
  */
 abstract class GameMode{
     abstract val name: String
+    abstract val mode: GameModes
     open val availableSizes: Array<SIZES> = SIZES.values()
     open val selection: Selection = Selection()
     open var available: Boolean = false
@@ -38,18 +39,22 @@ data class GameOptionsItem<T>(var selected: T, var available: T)
 
 enum class SIZES(val COLLIN: Int) {NORMAL(9), BIG(16)}
 enum class DIFFICULTIES(val percentShown: Int){EASY(30), NORMAL(40), HARD(75)}
+enum class GameModes { NORMAL, EVENODD, XSUDOKU }
 
 class Mode1 : GameMode() {
-    override val name = "Klassiker"
+    override val name = "Classic"
+    override val mode = GameModes.NORMAL
     override var available = true
     override val multiplicator = 1f
 }
 class Mode2 : GameMode() {
     override val name: String = "Even-Odd"
+    override val mode = GameModes.EVENODD
     override val multiplicator = 2f
 }
 class Mode3 : GameMode() {
     override val name: String = "X-Sudoku"
+    override val mode = GameModes.XSUDOKU
     override val multiplicator = 3f
     override val availableSizes = arrayOf(SIZES.NORMAL)
 }
