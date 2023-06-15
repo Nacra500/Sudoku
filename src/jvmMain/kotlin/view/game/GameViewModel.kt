@@ -1,12 +1,9 @@
 package view.game
 
-import AbstractSudokuGame
-import GameFactory
 import NavigationParcel
 import NormalSudokuGame
 import SudokuGame
 import XSudokuGame
-import domain.SudokuGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,11 +37,11 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
         clearPoints()
         updatePoints(modi.costs)
         engine = when(modi.name){
-            "X-Sudoku" -> XSudokuGame(GameFactory.Size.MEDIUM, GameFactory.Difficulty.HARD)
-            else -> NormalSudokuGame(GameFactory.Size.LARGE, GameFactory.Difficulty.EASY)
+            "X-Sudoku" -> XSudokuGame(modi.selection.size.selected, modi.selection.difficulty.selected)
+            else -> NormalSudokuGame(modi.selection.size.selected, modi.selection.difficulty.selected)
         }
         _uiState.update { currentState ->
-            currentState.copy(field = engine.generate().field, fieldComplete = engine.solution.field, mode = modi)
+            currentState.copy(field = engine.generate().field, fieldComplete = engine.solution.field, mode = modi, win = false)
         }
     }
 
@@ -53,7 +50,7 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
      * the earned points information
      */
     fun endGame() {
-        di.value = NavigationParcel.Menu(_uiState.value.points)
+        di.value = NavigationParcel.Menu(if(uiState.value.win) _uiState.value.points else 0)
     }
 
     /**
@@ -131,6 +128,22 @@ class GameViewModel(var di: MutableStateFlow<NavigationParcel>) {
             currentState.copy(points = 0)
         }
     }
+
+    /**
+     * Checks if the user inputs equals the generated sudoku. Such equal comparison is possible as each Sudoku has only one
+     * valid solution. If it was successfully the user can end the game and gets the points granted.
+     */
+    fun submit() {
+        if(uiState.value.win){
+            endGame()
+        }else{
+            if(uiState.value.fieldComplete.contentEquals(uiState.value.field)){
+                _uiState.update { currentState ->
+                    currentState.copy(win = true)
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -157,7 +170,8 @@ data class GameUiState(
     var selection: Pair<Int, Int>? = null,
     val render: Boolean = false,
     val points: Int = 0,
-    val mode: GameMode? = null
+    val mode: GameMode? = null,
+    val win: Boolean = false
 )
 
 val numKeyMap: Map<Int, Int> = mapOf(97 to 1, 98 to 2, 99 to 3, 100 to 4, 101 to 5, 102 to 6, 103 to 7,  104 to 8, 105 to 9, 49 to 1, 50 to 2, 51 to 3, 52 to 4, 53 to 5, 54 to 6, 55 to 7, 56 to 8, 57 to 9)

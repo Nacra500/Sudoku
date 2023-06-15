@@ -1,10 +1,14 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.awt.awtEventOrNull
 import androidx.compose.ui.input.key.KeyEventType.Companion.KeyDown
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.flow.MutableStateFlow
 import view.game.GameView
@@ -52,7 +56,8 @@ fun main(){
                     }
                 }
                 true
-            }
+            },
+            state = WindowState(position = WindowPosition(Alignment.Center), height = 768.dp, width = 1280.dp)
         ) {
             App(navigation, menuViewModel, gameViewModel)
         }

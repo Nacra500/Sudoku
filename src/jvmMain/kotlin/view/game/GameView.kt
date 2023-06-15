@@ -95,10 +95,16 @@ fun GameView(vm: GameViewModel) {
 
                     Button(
                         onClick = {
-                            //vm.submit()
-                        }, modifier = Modifier.align(Alignment.End)
+                            vm.submit()
+                        }, modifier = Modifier
+                            .align(Alignment.End)
+                            .run {
+                                if(vm.uiState.value.win)
+                                    this.background(color = Color.Red)
+                                else this
+                            }
                     ) {
-                        Text("Submit")
+                        Text(if(vm.uiState.value.win) "Close" else "Submit")
                     }
 
                     Button(
@@ -176,7 +182,7 @@ fun SudokuGrid(
                                     val selected = selection?.first == i && selection.second == j
                                     val backgroundColor = when(state.mode?.name){
                                             "Even-Odd" -> {
-                                                if(vm.uiState.value.fieldComplete[i][j] % 2 == 0 && Random.nextInt(1, 3) >= state.mode.options.difficult.selected.ordinal)
+                                                if(vm.uiState.value.fieldComplete[i][j] % 2 == 0 && Random.nextInt(1, 4) >= state.mode.selection.difficulty.selected.ordinal)
                                                     if(selected) Color(0xFFc2fc03) else Color.Green
                                                 else
                                                     if(selected) Color(0xFFffe0b3) else Color.White

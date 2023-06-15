@@ -1,3 +1,6 @@
+import domain.DIFFICULTIES
+import domain.SIZES
+
 /**
  *
  * class which creates an instances of an Sudoku game from the given parameters.
@@ -12,22 +15,11 @@ object GameFactory {
      * @param size
      * @return SudokuGame of the specified type with the specified size and difficulty
      */
-    fun getGame(difficulty: Difficulty, mode: GameMode?, size: Size): SudokuGame {
+    fun getGame(difficulty: DIFFICULTIES, mode: GameMode?, size: SIZES): SudokuGame {
         return when (mode) {
             GameMode.XSUDOKU -> XSudokuGame(size, difficulty)
             else -> NormalSudokuGame(size, difficulty)
         }
-    }
-
-    /**
-     *
-     * specifies how many cells (in percent) are removed from the full sudoku.
-     *
-     */
-    enum class Difficulty(val percentShown: Int) {
-        EASY(20),
-        MEDIUM(35),
-        HARD(50)
     }
 
     /**
@@ -41,13 +33,4 @@ object GameFactory {
         XSUDOKU
     }
 
-    /**
-     *
-     * specifies the size of the sudoku, thus how many lines and columns it has.
-     *
-     */
-    enum class Size(val COLLLIN: Int) {
-        MEDIUM(9),
-        LARGE(16)
-    }
 }
