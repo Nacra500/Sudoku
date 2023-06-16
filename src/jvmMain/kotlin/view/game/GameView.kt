@@ -23,6 +23,8 @@ import androidx.compose.material.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -34,10 +36,9 @@ fun GameView(vm: GameViewModel) {
     MaterialTheme {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(top = 50.dp)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 modifier = Modifier
@@ -55,52 +56,84 @@ fun GameView(vm: GameViewModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column (
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 16.dp) // Padding from the center
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ){
                     SudokuGrid(gameUiState.selection, vm)
 
-                    /*if (popupControl) {
-                        Popup(
-                            alignment = Alignment.Center,
-                            offset = IntOffset(-80, 600),
-                            onDismissRequest = { popupControl = false },
-
-                            ) {
-                            Surface(
-                                border = BorderStroke(4.dp, MaterialTheme.colors.secondary),
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color(0xCCEEEEEE),
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(20.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(text = "I'm popping up")
-                                    Spacer(modifier = Modifier.height(32.dp))
-                                    TextButton(onClick = { popupControl = false }) {
-                                        Text(text = "Close Popup")
-                                    }
-                                }
-                            }
-                        }*/
                 }
 
-                Column {
-                    CountUpTimer(vm)
-                    EarningPoints(vm)
+                Column (
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp) // Padding from the center
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-                    TextButton(onClick = { vm.getHint() }, enabled = gameUiState.points >= hintCosts) {
+                    Box(
+                        modifier = Modifier.align(Alignment.Start)
+                            .width(120.dp)
+                            .height(50.dp)
+                            .padding(start = 50.dp)
+
+                    ){
+                        Text(CountUpTimer(vm),
+                            modifier = Modifier,
+                            color = Color.Black,
+                            fontSize = 20.sp
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.align(Alignment.Start)
+                           // .width(120.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(10.dp, 10.dp)
+                    ){
+                        Text("Achievable Points:",
+                            modifier = Modifier,
+                            color = Color.Black,
+                            fontSize = 15.sp
+                        )
+                        Text(EarningPoints(vm).toString(),
+                            modifier = Modifier.padding(top = 20.dp),
+                            color = Color.Black,
+                            fontSize = 20.sp
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier.align(Alignment.Start)
+                            .width(140.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(15.dp, 5.dp)
+                       ,
+                        onClick = { vm.getHint() }, enabled = gameUiState.points >= hintCosts,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+                    ) {
                         Text(
                             if (!gameUiState.win) "Hint" else "You won!",
                             color = if (!gameUiState.win) Color.Unspecified else Color.Blue
                         )
                     }
 
-
                     Button(
                         onClick = {
                             vm.submit()
                         }, modifier = Modifier
-                            .align(Alignment.End)
+                            .align(Alignment.Start)
+                            .width(140.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(15.dp, 5.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+
                     ) {
                         Text(if (vm.uiState.value.win) "Close" else "Submit")
                     }
@@ -109,9 +142,17 @@ fun GameView(vm: GameViewModel) {
                     Button(
                         onClick = {
                             vm.endGame()
-                        }, modifier = Modifier.align(Alignment.End)
+                        }, modifier = Modifier.align(Alignment.Start)
+                            .width(140.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(15.dp, 5.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+
                     ) {
-                        Text("EndGame")
+                        Text("EndGame",
+                            color = Color(0xFF4552B8)
+                        )
+
                     }
                 }
             }
@@ -119,19 +160,8 @@ fun GameView(vm: GameViewModel) {
     }
 }
 
-
 @Composable
-fun displayHint() {
-
-}
-
-@Composable
-fun buyHint() {
-
-}
-
-@Composable
-fun EarningPoints(vm: GameViewModel) {
+fun EarningPoints(vm: GameViewModel): Int {
     LaunchedEffect(key1 = true) {
         while (!vm.uiState.value.win) {
             delay(60000L)
@@ -139,11 +169,7 @@ fun EarningPoints(vm: GameViewModel) {
         }
     }
 
-    Text(
-        text = "Points: " + vm.uiState.value.points,
-        fontSize = 30.sp,
-        modifier = Modifier.padding(16.dp)
-    )
+    return vm.uiState.value.points
 }
 
 
@@ -175,7 +201,7 @@ fun SudokuGrid(
                                 .size(30.dp)
                                 .border(
                                     width = normalBorderWidth,
-                                    color = Color.Black,
+                                    color = Color.DarkGray,
                                 ).run {
                                     if (fillAble) this.clickable { vm.selectField(i, j) } else this
                                 }.run {
@@ -184,20 +210,20 @@ fun SudokuGrid(
                                         "Even-Odd" -> {
                                             if (vm.uiState.value.fieldComplete[i][j] % 2 == 0 && random[i][j] >= state.mode.selection.difficulty.selected.ordinal
                                             )
-                                                if (selected) Color(0xFFc2fc03) else Color.Green
+                                                if (selected) Color(0xFF80B4F1) else Color(0xFF9AC1EF)
                                             else
-                                                if (selected) Color(0xFFffe0b3) else Color.White
+                                                if (selected) Color(0xFFE4E4E4) else Color.White
                                         }
 
                                         "X-Sudoku" -> {
                                             if (i == j || i == gridSize - j - 1)
-                                                if (selected) Color(0xFF383eff) else Color(0xFF8286ff)
+                                                if (selected) Color(0xFF97DA4D) else Color(0xFFA7DD6B)
                                             else
-                                                if (selected) Color(0xFFffe0b3) else Color.White
+                                                if (selected) Color(0xFFE4E4E4) else Color.White
                                         }
 
                                         else -> {
-                                            if (selected) Color(0xFFffe0b3) else Color.White
+                                            if (selected) Color(0xFFE4E4E4) else Color.White
                                         }
                                     }
                                     this.background(color = backgroundColor)
@@ -205,14 +231,13 @@ fun SudokuGrid(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                fontWeight = if (!fillAble) FontWeight.ExtraBold else null,
+                                color = if (!fillAble) Color.Black else Color.DarkGray,
                                 text = if (field[i][j] == 0) ""
                                 else field[i][j].absoluteValue.toString(),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .height(textSize)
-                                    .fillMaxSize(),
-                                color = if (fillAble) textColorPrimary else textColorSecondary
+                                    .fillMaxSize()
                             )
                         }
                     }
@@ -249,7 +274,7 @@ fun GridDivider(heightDp: Dp, widthDp: Dp) {
  */
 
 @Composable
-fun CountUpTimer(vm: GameViewModel) {
+fun CountUpTimer(vm: GameViewModel): String {
     var timePassed by remember { mutableStateOf(0) }
     val timerText = remember {
         derivedStateOf {
@@ -264,10 +289,7 @@ fun CountUpTimer(vm: GameViewModel) {
         }
     }
 
-    Text(
-        text = timerText.value,
-        fontSize = 30.sp,
-        modifier = Modifier.padding(16.dp)
-    )
+    return timerText.value
+
 }
 
