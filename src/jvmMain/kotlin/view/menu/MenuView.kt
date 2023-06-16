@@ -154,60 +154,91 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun radioChips(type: GameMode, vm: MenuViewModel) {
-
-    Column() {
-
+    Column {
         Row {
+            var selectedSize by remember { mutableStateOf(type.selection.size.selected) }
             for (i in type.availableSizes) {
-                Chip(
-                    onClick = { vm.updateSize(type, i) },
+                Box(
                     modifier = Modifier
-                        .width(90.dp),
+                        .width(90.dp)
+                        .clickable {
+                            vm.updateSize(type, i)
+                            selectedSize = i
+                        }
+                        .background(
+                            color = if (selectedSize == i) Color.LightGray else Color.Transparent,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clip(RoundedCornerShape(8.dp))
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp))
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(
                                 text = i.toString(),
+                                color = if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
+                                    Color.Red
+                                }
+                                else {
+                                     Color.Black
+                                },
                                 style = TextStyle(fontSize = 12.sp),
                                 textAlign = TextAlign.Center
                             )
-                            if (type.selection.size.selected != i) {
-                                if (i.ordinal > type.selection.size.available.ordinal) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
+                            /*if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }*/
                         }
                     }
                 }
             }
         }
         Row {
+            var selectedDifficulty by remember { mutableStateOf(type.selection.difficulty.selected) }
             for (i in DIFFICULTIES.values()) {
-                Chip(
-                    onClick = { vm.updateDifficult(type, i) },
+                Box(
                     modifier = Modifier
                         .width(90.dp)
-                        ,
+                        .clickable {
+                            vm.updateDifficult(type, i)
+                            selectedDifficulty = i
+                        }
+                        .background(
+                            color = if (selectedDifficulty == i) Color.LightGray else Color.Transparent,
+                            shape = RoundedCornerShape(8.dp) // Festlegen der abgerundeten Ecken
+                        )
+
                 ) {
-                    Box() {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(
                                 text = i.toString(),
+                                color = if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
+                                    Color.Red
+                                }
+                                else {
+                                    Color.Black
+                                },
                                 style = TextStyle(fontSize = 12.sp)
                             )
-                            if (type.selection.difficulty.selected != i) {
-                                if (i.ordinal > type.selection.difficulty.available.ordinal) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
+                            /*if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }*/
                         }
                     }
                 }
