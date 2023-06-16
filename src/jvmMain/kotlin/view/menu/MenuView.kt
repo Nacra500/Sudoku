@@ -157,7 +157,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     modifier = Modifier
                         .width(110.dp)
                         .height(30.dp)
-                        .padding(end = 8.dp), // Abstand am rechten Rand des Buttons
+                        .padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (selectedSize == i) Color.LightGray else Color.White,
                         contentColor = if (selectedSize == i) Color.Black else Color.Gray
@@ -187,7 +187,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     modifier = Modifier
                         .width(110.dp)
                         .height(30.dp)
-                        .padding(end = 8.dp), // Abstand am rechten Rand des Buttons
+                        .padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (selectedDifficulty == i) Color.LightGray else Color.White,
                         contentColor = if (selectedDifficulty == i) Color.Black else Color.Gray
