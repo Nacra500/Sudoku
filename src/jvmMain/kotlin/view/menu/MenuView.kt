@@ -36,43 +36,17 @@ fun MenuView(vm: MenuViewModel) {
     MaterialTheme {
         Column {
             Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text("Welcome to Sudoku!")
-            }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text("")
-            }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp) {
-                    Text(
-                        buildAnnotatedString {
-                            append("Points: ")
-                            withStyle(
-                                style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                            ) {
-                                append(gameUiState.xp.toString())
-                            }
-                        }, modifier = Modifier.clickable { vm.updateXP(1000) }
-                            .background(Color.LightGray)
-                            .padding(10.dp)
-
-                    )
+                Box(modifier = Modifier.padding(20.dp)) {
+                    Text("Welcome to Sudoku!")
                 }
             }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text("")
-            }
-
-
             Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                 for (i in gameUiState.gameModes) {
                     gameMode(i, gameUiState.selectedMode, vm)
                 }
             }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text("")
-            }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp) {
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp, modifier = Modifier.width(120.dp).height(60.dp)) {
                     gameUiState.buttonState.let { points ->
                         Button(
                             onClick = {
@@ -94,7 +68,7 @@ fun MenuView(vm: MenuViewModel) {
                             } else {
                                 Text(
                                     buildAnnotatedString {
-                                        append("SPENT \n")
+                                        append("SPEND \n")
                                         withStyle(
                                             style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
                                         ) {
@@ -107,6 +81,22 @@ fun MenuView(vm: MenuViewModel) {
                     }
                 }
             }
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(10.dp)){
+                Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp, modifier = Modifier.width(120.dp).height(60.dp)) {
+                    Text(
+                        buildAnnotatedString {
+                            append("Points: ")
+                            withStyle(
+                                style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                            ) {
+                                append(gameUiState.xp.toString())
+                            }
+                        }, modifier = Modifier.clickable { vm.updateXP(1000) }
+                            .background(Color.LightGray)
+                            .padding(10.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -117,7 +107,7 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 
     Card(
         modifier = Modifier
-            .padding(15.dp)
+            .padding(30.dp)
             .clip(RoundedCornerShape(10)),
         elevation = 10.dp,
         //shape = RoundedCornerShape(20.dp),
@@ -134,13 +124,14 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
                         .clip(RoundedCornerShape(10))
                 )
 
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box() {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(type.name, modifier = Modifier.align(Alignment.CenterVertically))
                         if (!type.available) {
                             Icon(imageVector = Icons.Default.Lock, contentDescription = null)
                         }
+                        Text(type.name, modifier = Modifier.align(Alignment.CenterVertically))
 
                     }
                 }
@@ -155,93 +146,64 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 @Composable
 fun radioChips(type: GameMode, vm: MenuViewModel) {
     Column {
-        Row {
+        Row(modifier = Modifier.padding(10.dp)){
             var selectedSize by remember { mutableStateOf(type.selection.size.selected) }
             for (i in type.availableSizes) {
-                Box(
+                Button(
+                    onClick = {
+                        vm.updateSize(type, i)
+                        selectedSize = i
+                    },
                     modifier = Modifier
-                        .width(90.dp)
-                        .clickable {
-                            vm.updateSize(type, i)
-                            selectedSize = i
-                        }
-                        .background(
-                            color = if (selectedSize == i) Color.LightGray else Color.Transparent,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(RoundedCornerShape(8.dp))
+                        .width(110.dp)
+                        .height(30.dp)
+                        .padding(end = 8.dp), // Abstand am rechten Rand des Buttons
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (selectedSize == i) Color.LightGray else Color.White,
+                        contentColor = if (selectedSize == i) Color.Black else Color.Gray
+                    ),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
-                    Box(
-                        modifier = Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp))
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = i.toString(),
-                                color = if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
-                                    Color.Red
-                                }
-                                else {
-                                     Color.Black
-                                },
-                                style = TextStyle(fontSize = 12.sp),
-                                textAlign = TextAlign.Center
-                            )
-                            /*if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }*/
-                        }
+                    if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
+                    Text(text = i.toString(), style = TextStyle(fontSize = 11.sp))
                 }
+
             }
         }
-        Row {
+        Row (modifier = Modifier.padding(10.dp)){
             var selectedDifficulty by remember { mutableStateOf(type.selection.difficulty.selected) }
             for (i in DIFFICULTIES.values()) {
-                Box(
+                Button(
+                    onClick = {
+                        vm.updateDifficult(type, i)
+                        selectedDifficulty = i
+                    },
                     modifier = Modifier
-                        .width(90.dp)
-                        .clickable {
-                            vm.updateDifficult(type, i)
-                            selectedDifficulty = i
-                        }
-                        .background(
-                            color = if (selectedDifficulty == i) Color.LightGray else Color.Transparent,
-                            shape = RoundedCornerShape(8.dp) // Festlegen der abgerundeten Ecken
-                        )
-
+                        .width(110.dp)
+                        .height(30.dp)
+                        .padding(end = 8.dp), // Abstand am rechten Rand des Buttons
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (selectedDifficulty == i) Color.LightGray else Color.White,
+                        contentColor = if (selectedDifficulty == i) Color.Black else Color.Gray
+                    ),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
-                    Box(
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = i.toString(),
-                                color = if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
-                                    Color.Red
-                                }
-                                else {
-                                    Color.Black
-                                },
-                                style = TextStyle(fontSize = 12.sp)
-                            )
-                            /*if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }*/
-                        }
+                    if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
+                    Text(text = i.toString(), style = TextStyle(fontSize = 11.sp))
                 }
+
             }
         }
     }
