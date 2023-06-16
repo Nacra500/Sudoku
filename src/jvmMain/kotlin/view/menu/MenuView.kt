@@ -164,7 +164,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    if (type.selection.size.selected != i && i.ordinal > type.selection.size.available.ordinal) {
+                    if (i.ordinal > type.selection.size.available.ordinal) {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = null,
@@ -194,7 +194,7 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    if (type.selection.difficulty.selected != i && i.ordinal > type.selection.difficulty.available.ordinal) {
+                    if (i.ordinal > type.selection.difficulty.available.ordinal) {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = null,
