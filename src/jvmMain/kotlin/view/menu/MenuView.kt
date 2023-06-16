@@ -40,19 +40,19 @@ fun MenuView(vm: MenuViewModel) {
                     Text("Welcome to Sudoku!")
                 }
             }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().padding(end=100.dp)) {
                 for (i in gameUiState.gameModes) {
                     gameMode(i, gameUiState.selectedMode, vm)
                 }
             }
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(end = 150.dp, top = 10.dp, bottom = 10.dp)) {
                 Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp, modifier = Modifier.width(120.dp).height(60.dp)) {
                     gameUiState.buttonState.let { points ->
                         Button(
                             onClick = {
                                 vm.buttonPressed()
                             },
-                            colors = ButtonDefaults.buttonColors(backgroundColor = if (points > 0) Color.Green else Color.Red)
+                            colors = ButtonDefaults.buttonColors(backgroundColor = if (points > 0) Color(0xFFA7DD6B) else Color(0xFFEC846A))
                         ) {
                             if (gameUiState.buttonState > 0) {
                                 Text(
@@ -81,20 +81,28 @@ fun MenuView(vm: MenuViewModel) {
                     }
                 }
             }
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(10.dp)){
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth().padding(end = 150.dp, top = 10.dp, bottom = 10.dp)) {
                 Card(shape = RoundedCornerShape(20.dp), elevation = 10.dp, modifier = Modifier.width(120.dp).height(60.dp)) {
-                    Text(
-                        buildAnnotatedString {
-                            append("Points: ")
-                            withStyle(
-                                style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                            ) {
-                                append(gameUiState.xp.toString())
-                            }
-                        }, modifier = Modifier.clickable { vm.updateXP(1000) }
-                            .background(Color.LightGray)
-                            .padding(10.dp)
-                    )
+                    gameUiState.buttonState.let { points ->
+                        Button(
+                            onClick = {
+                                vm.updateXP(1000)
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray)
+                        ) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("POINTS: ")
+                                    withStyle(
+                                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                                    ) {
+                                        append(gameUiState.xp.toString())
+                                    }
+                                }, modifier = Modifier.clickable { vm.updateXP(1000) }
+
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -104,28 +112,29 @@ fun MenuView(vm: MenuViewModel) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
-
+    val isSelected = selected == type
     Card(
         modifier = Modifier
             .padding(30.dp)
             .clip(RoundedCornerShape(10)),
+
         elevation = 10.dp,
-        //shape = RoundedCornerShape(20.dp),
-        onClick = { vm.updateGameMode(type) }
+        shape = RoundedCornerShape(20.dp),
+        onClick = { vm.updateGameMode(type)}
 
 
     ) {
-        Column( horizontalAlignment = Alignment.CenterHorizontally) {
+        Column( horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.background(if (isSelected) Color(0xFFefefef)else Color.White)) {
                 Image(
                     painter = painterResource("drawable/"+type.name+".png"),
                     contentDescription = "Andy Rubin",
                     contentScale = ContentScale.FillWidth,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10))
+                    modifier = Modifier.padding(20.dp).clip(RoundedCornerShape(10))
                 )
 
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box() {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (!type.available) {
@@ -159,8 +168,8 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                         .height(30.dp)
                         .padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (selectedSize == i) Color.LightGray else Color.White,
-                        contentColor = if (selectedSize == i) Color.Black else Color.Gray
+                        backgroundColor = if (selectedSize == i) Color.Gray else Color.White,
+                        contentColor = if (selectedSize == i) Color.White else Color.Gray
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
@@ -189,8 +198,8 @@ fun radioChips(type: GameMode, vm: MenuViewModel) {
                         .height(30.dp)
                         .padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (selectedDifficulty == i) Color.LightGray else Color.White,
-                        contentColor = if (selectedDifficulty == i) Color.Black else Color.Gray
+                        backgroundColor = if (selectedDifficulty == i) Color.Gray else Color.White,
+                        contentColor = if (selectedDifficulty == i) Color.White else Color.Gray
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
