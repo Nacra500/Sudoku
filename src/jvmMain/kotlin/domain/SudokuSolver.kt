@@ -1,3 +1,5 @@
+package domain
+
 /**
  * Solver extending an AbstractSolver. Can be used to solve classical sudokus. Provides static methods containing the logical rules of a classical sudoku.
  * instanciates a solver with a SudokuField which shall be solved.

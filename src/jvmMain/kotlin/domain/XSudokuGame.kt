@@ -1,3 +1,5 @@
+package domain
+
 import domain.DIFFICULTIES
 import domain.GameModes
 import domain.SIZES

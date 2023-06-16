@@ -1,3 +1,5 @@
+package domain
+
 import domain.DIFFICULTIES
 import domain.SIZES
 import java.util.*

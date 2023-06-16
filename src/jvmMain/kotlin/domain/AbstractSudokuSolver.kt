@@ -1,3 +1,5 @@
+package domain
+
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
@@ -11,7 +13,8 @@ abstract class  AbstractSudokuSolver
  * Instanciates a new Solver with a sudoku field
  *
  * @param field
- */(protected var field: SudokuField) {
+ */
+    (protected var field: SudokuField) {
     /**
      * every solver needs a method which returns if a value can generally be set on a certain position
      *

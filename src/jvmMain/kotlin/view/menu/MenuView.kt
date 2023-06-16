@@ -124,7 +124,7 @@ fun gameMode(type: GameMode, selected: GameMode, vm: MenuViewModel) {
 
 
     ) {
-        Column( horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.background(if (isSelected) Color(0xFFefefef)else Color.White)) {
+        Column( horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.background(if (isSelected) Color(0xFFefefef) else Color.White)) {
                 Image(
                     painter = painterResource("drawable/"+type.name+".png"),
                     contentDescription = "Andy Rubin",

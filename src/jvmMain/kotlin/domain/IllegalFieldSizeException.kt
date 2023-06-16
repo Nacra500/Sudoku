@@ -1,3 +1,5 @@
+package domain
+
 /**
  *
  * is thrown when the given arguments do not belong to a sudoku field.

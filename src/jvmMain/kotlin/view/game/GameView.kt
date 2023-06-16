@@ -261,20 +261,6 @@ fun GridDivider(heightDp: Dp, widthDp: Dp) {
     )
 }
 
-
-/**
- * The function initializes a timer that starts from zero and counts upwards.
- * The timer updates every second and the displayed time is formatted in
- * the "MM:SS" format. The timer runs indefinitely.
- *
- * Example usage: CountUpTimer()
- *
- * @see androidx.compose.runtime.LaunchedEffect
- * @see androidx.compose.runtime.remember
- * @see androidx.compose.runtime.mutableStateOf
- * @see androidx.compose.runtime.derivedStateOf
- */
-
 @Composable
 fun CountUpTimer(vm: GameViewModel): String {
     var timePassed by remember { mutableStateOf(0) }

@@ -1,3 +1,5 @@
+package domain
+
 /**
  * a sudoku generator for a classical sudoku extending an abstract sudoku.
  */

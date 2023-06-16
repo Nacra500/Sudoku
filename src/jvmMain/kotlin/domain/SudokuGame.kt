@@ -1,3 +1,5 @@
+package domain
+
 /**
  *
  * defines the methods every sudoku game should have and servers as the connection between domain and view layer.

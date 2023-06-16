@@ -1,16 +1,11 @@
 package view.game
 
 import NavigationParcel
-import NormalSudokuGame
-import SudokuField
-import SudokuGame
-import XSudokuGame
+import domain.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import domain.GameMode
-import domain.SIZES
 import kotlin.math.abs
 import kotlin.random.Random
 

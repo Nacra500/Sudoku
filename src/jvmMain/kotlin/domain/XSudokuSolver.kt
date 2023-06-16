@@ -1,3 +1,5 @@
+package domain
+
 /**
  * Solver extending an AbstractSolver. Can be used to solve x sudokus. Provides static methods containing the logical rules of a x sudoku.
  */

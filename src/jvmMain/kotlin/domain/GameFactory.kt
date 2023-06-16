@@ -1,7 +1,4 @@
-import domain.DIFFICULTIES
-import domain.GameModes
-import domain.SIZES
-
+package domain
 /**
  *
  * class which creates an instances of an Sudoku game from the given parameters.
