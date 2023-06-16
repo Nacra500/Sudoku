@@ -231,13 +231,15 @@ fun SudokuGrid(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                color = if (!fillAble) Color.Black else Color.DarkGray,
-                                text = if (field[i][j] == 0) ""
-                                else field[i][j].absoluteValue.toString(),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .height(textSize)
-                                    .fillMaxSize()
+                                    fontWeight = if (!fillAble) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (!fillAble) Color.Black else Color.DarkGray,
+                                    text = if (field[i][j] == 0) "" else field[i][j].absoluteValue.toString(),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .height(textSize)
+                                        .fillMaxSize()
+
+
                             )
                         }
                     }
