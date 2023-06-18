@@ -2,6 +2,8 @@ package view.game
 
 import NavigationParcel
 import domain.*
+import domain.entities.SudokuField
+import domain.game.SudokuGame
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

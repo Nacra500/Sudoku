@@ -1,5 +1,6 @@
-package domain
+package domain.solver
 
+import domain.entities.SudokuField
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream

@@ -1,4 +1,7 @@
-package domain
+package domain.xSudoku
+
+import domain.entities.SudokuField
+import domain.game.SudokuGameFieldGenerator
 
 /**
  * a sudoku generator for a x sudoku extending an abstract sudoku.
@@ -23,7 +26,7 @@ class XSudokuGameFieldGenerator(field: SudokuField) : SudokuGameFieldGenerator(f
      * @param val vaöue to check
      * @return boolean if value can be found only one time in the axis of the coordinates (returns false if the coordinates are not on any axis and checks for both if the value is on both axis (middle))
      */
-    protected fun checkForObviousDiagonal(x: Int, y: Int, `val`: Int): Boolean {
+    fun checkForObviousDiagonal(x: Int, y: Int, `val`: Int): Boolean {
         //checks if the coordiantes are on an axis, if not than false is returned
         var found = false
         val onLeftDiagonal = x == y
@@ -79,6 +82,6 @@ class XSudokuGameFieldGenerator(field: SudokuField) : SudokuGameFieldGenerator(f
      * @return if input value in generelly possible by the x sudoku rules
      */
     override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
-        return XSudokuSolver.Companion.checkValidInput(x, y, field, `val`)
+        return XSudokuSolver.checkValidInput(x, y, field, `val`)
     }
 }

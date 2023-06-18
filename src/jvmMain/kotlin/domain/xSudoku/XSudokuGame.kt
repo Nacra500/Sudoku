@@ -1,8 +1,10 @@
-package domain
+package domain.xSudoku
 
-import domain.DIFFICULTIES
-import domain.GameModes
-import domain.SIZES
+import domain.*
+import domain.game.AbstractSudokuGame
+import domain.entities.SudokuField
+import domain.game.AbstractSudokuGameFieldGenerator
+import domain.solver.AbstractSudokuSolver
 
 /**
  * the x sudoku Version of a sudoku game extending the abstract SudokuGame

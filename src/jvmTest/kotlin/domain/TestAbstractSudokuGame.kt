@@ -1,13 +1,18 @@
+package domain
+
+import domain.entities.SudokuCell
+import domain.entities.SudokuField
+import domain.game.AbstractSudokuGame
+import normalSudoku.NormalSudokuGame
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class TestAbstractSudokuGame {
-    var game: AbstractSudokuGame? = null
+    private lateinit var game: AbstractSudokuGame
     @BeforeEach
     fun setup() {
-        game = NormalSudokuGame(GameFactory.Size.MEDIUM, GameFactory.Difficulty.HARD)
+        game = NormalSudokuGame(SIZES.NORMAL, DIFFICULTIES.HARD)
     }
 
     @Test
@@ -16,24 +21,26 @@ internal class TestAbstractSudokuGame {
         assertTrue(hasEmptyCells(field))
     }
 
+    @Test
     fun testGetSolution() {
         game.generate()
-        val field: SudokuField = game.getSolution()
+        val field: SudokuField = game.solution
         assertFalse(hasEmptyCells(field))
     }
 
+    @Test
     fun testGetHint() {
-        game.generate()
-        val field: SudokuField = game.getSolution()
-        val hint: SudokuCell = game.getHint(field)
+        val field: SudokuField = game.generate()
+        val hint: SudokuCell = game.getHint(field)!!
         assertEquals(field.getCellValue(hint.x, hint.y), hint.`val`)
     }
 
+    @Test
     fun testGetMistakes() {
         val gameField: SudokuField = game.generate()
-        val field: SudokuField = game.getSolution()
+        val field: SudokuField = game.solution
         var `val`: Int = field.getCellValue(0, 0)
-        `val` = java.lang.Math.abs(`val` - field.COLLIN)
+        `val` = Math.abs(`val` - field.COLLIN)
         gameField.setValue(0, 0, `val`)
         val mistakes: List<SudokuCell> = game.showMistakes(gameField)
         assertEquals(mistakes.size, 1)

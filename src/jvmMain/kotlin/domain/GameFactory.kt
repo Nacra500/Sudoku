@@ -1,4 +1,9 @@
 package domain
+
+import domain.game.SudokuGame
+import domain.xSudoku.XSudokuGame
+import normalSudoku.NormalSudokuGame
+
 /**
  *
  * class which creates an instances of an Sudoku game from the given parameters.

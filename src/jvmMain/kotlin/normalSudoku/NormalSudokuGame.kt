@@ -1,7 +1,13 @@
-package domain
+package normalSudoku
 
 import domain.DIFFICULTIES
 import domain.SIZES
+import domain.entities.SudokuField
+import domain.game.AbstractSudokuGame
+import domain.game.AbstractSudokuGameFieldGenerator
+import domain.game.SudokuGameFieldGenerator
+import domain.solver.AbstractSudokuSolver
+import domain.solver.SudokuSolver
 
 /**
  * the classical Version of a sudoku game extending the abstract SudokuGame

@@ -1,4 +1,6 @@
-package domain
+package domain.solver
+
+import domain.entities.SudokuField
 
 /**
  * Solver extending an AbstractSolver. Can be used to solve classical sudokus. Provides static methods containing the logical rules of a classical sudoku.

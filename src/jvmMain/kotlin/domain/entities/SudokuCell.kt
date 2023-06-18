@@ -1,4 +1,4 @@
-package domain
+package domain.entities
 
 /**
  * class which can be used as a return value. Describes all important attributes a Cell has (coordinates and value)

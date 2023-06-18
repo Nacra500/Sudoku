@@ -1,8 +1,10 @@
-package domain
+package domain.game
 
-import domain.DIFFICULTIES
-import domain.SIZES
-import java.util.*
+import domain.*
+import domain.entities.SudokuCell
+import domain.entities.SudokuField
+import domain.solver.AbstractSudokuSolver
+import domain.solver.SudokuSolver
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
@@ -92,7 +94,7 @@ internal abstract class AbstractSudokuGame(val size: SIZES, val difficulty: DIFF
      * please find more information in SudokuGame interface
      */
     override fun checkValidInput(x: Int, y: Int, `val`: Int, field: SudokuField?): Boolean {
-        return SudokuSolver.Companion.checkValidInput(x, y, field, `val`)
+        return SudokuSolver.checkValidInput(x, y, field, `val`)
     }
 
     /**

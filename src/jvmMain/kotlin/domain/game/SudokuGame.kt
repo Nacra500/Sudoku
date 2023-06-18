@@ -1,4 +1,7 @@
-package domain
+package domain.game
+
+import domain.entities.SudokuCell
+import domain.entities.SudokuField
 
 /**
  *

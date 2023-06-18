@@ -1,5 +1,7 @@
-package domain
+package domain.game
 
+import domain.entities.SudokuCell
+import domain.entities.SudokuField
 import java.util.*
 
 /**
@@ -8,7 +10,7 @@ import java.util.*
  */
 abstract class AbstractSudokuGameFieldGenerator(protected var field: SudokuField) {
     // a two dimensional array of set containg all values which can possibly be set (and ot violating the rules) on the given coordinates
-    protected var possibles: Array<Array<MutableSet<Int>>> = Array(field.COLLIN) {
+    var possibles: Array<Array<MutableSet<Int>>> = Array(field.COLLIN) {
                 Array(field.COLLIN) {mutableSetOf(0) }
             }
     private val solutionSteps: Stack<SudokuCell> = Stack() // a stack containing all removal steps
@@ -69,7 +71,7 @@ abstract class AbstractSudokuGameFieldGenerator(protected var field: SudokuField
     /**
      * helper function which provides all possibel values for all fields
      */
-    protected fun analyzeField() {
+    fun analyzeField() {
         for (y in 0 until field.COLLIN) {
             for (x in 0 until field.COLLIN) {
                 possibles[y][x].clear()

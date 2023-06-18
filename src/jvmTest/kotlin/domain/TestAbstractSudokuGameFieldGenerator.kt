@@ -1,30 +1,26 @@
+package domain
+
+import PLAYFIELD_3_EMPTY
+import domain.entities.SudokuField
+import domain.game.AbstractSudokuGameFieldGenerator
+import domain.game.SudokuGameFieldGenerator
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class TestAbstractSudokuGameFieldGenerator {
-    var game: AbstractSudokuGameFieldGenerator? = null
-    var field: SudokuField? = null
-    var possible: Array<Array<MutableSet<Int>>>
+    lateinit var game: AbstractSudokuGameFieldGenerator
+    lateinit var field: SudokuField
+    lateinit var possible: Array<Array<MutableSet<Int>>>
+
     @BeforeEach
     @Throws(java.lang.Exception::class)
     fun setUp() {
-        val empty: Int = SudokuField.EMPTY
-        val arrField = arrayOf(
-            intArrayOf(5, 3, 4, 6, 7, empty, 9, 1, 2),
-            intArrayOf(6, empty, 2, 1, 9, 5, 3, 4, 8),
-            intArrayOf(1, 9, 8, 3, 4, 2, empty, 6, 7),
-            intArrayOf(8, 5, 9, empty, 6, 1, 4, 2, 3),
-            intArrayOf(4, 2, 6, 8, 5, 3, 7, empty, 1),
-            intArrayOf(7, 1, empty, 9, 2, 4, 8, 5, 6),
-            intArrayOf(empty, 6, 1, 5, 3, 7, 2, 8, 4),
-            intArrayOf(2, 8, 7, 4, empty, 9, 6, 3, 5),
-            intArrayOf(3, 4, 5, 2, 8, 6, 1, empty, empty)
-        )
+        val arrField = PLAYFIELD_3_EMPTY
         field = SudokuField(arrField)
         game = SudokuGameFieldGenerator(field)
-        possible = Array<Array<MutableSet<*>>>(9) {
-            arrayOfNulls<Set<*>>(9)
+        possible = Array(field.COLLIN) {
+            Array(field.COLLIN) { mutableSetOf(0) }
         }
         for (i in 0..8) {
             for (j in 0..8) {
@@ -47,8 +43,8 @@ internal class TestAbstractSudokuGameFieldGenerator {
     @Test
     fun testCreateSolvable() {
         game.createSolvable()
-        assertTrue(game.getNumberOfRemovedCells() > 0)
-        assertTrue(game.getNumberOfRemovedCells() < 81 - 17) // 17 is the lowest number of cells a sudoku has to have in order to be solvable
+        assertTrue(game.numberOfRemovedCells > 0)
+        assertTrue(game.numberOfRemovedCells < 81 - 17) // 17 is the lowest number of cells a sudoku has to have in order to be solvable
     }
 
     @Test
@@ -59,7 +55,7 @@ internal class TestAbstractSudokuGameFieldGenerator {
         assertFalse(possibleEqual(game.possibles, possible))
     }
 
-    private fun possibleEqual(pos1: Array<Array<Set<Int>>>, pos2: Array<Array<MutableSet<Int>>>): Boolean {
+    private fun possibleEqual(pos1: Array<Array<MutableSet<Int>>>, pos2: Array<Array<MutableSet<Int>>>): Boolean {
         for (y in possible.indices) {
             for (x in possible[0].indices) {
                 if (pos1[y][x] != pos2[y][x]) return false

@@ -1,4 +1,4 @@
-package domain
+package domain.entities
 
 import java.util.*
 import kotlin.math.sqrt

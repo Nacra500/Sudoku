@@ -1,26 +1,19 @@
+package domain
+
+import PLAYFIELD_3_EMPTY_V2
+import domain.entities.SudokuField
+import domain.solver.SudokuSolver
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class TestSudokuSolver {
-    var field: SudokuField? = null
-    var solver: SudokuSolver? = null
+    lateinit var field: SudokuField
+    lateinit var solver: SudokuSolver
     @BeforeEach
     @Throws(java.lang.Exception::class)
     fun setUp() {
-        val empty: Int = SudokuField.EMPTY
-        val arrField = arrayOf(
-            intArrayOf(empty, empty, empty, empty, empty, empty, empty, empty, empty),
-            intArrayOf(empty, 1, 2, empty, 3, 4, 5, 6, 7),
-            intArrayOf(empty, 3, 4, 5, empty, 6, 1, 8, 2),
-            intArrayOf(empty, empty, 1, empty, 5, 8, 2, empty, 6),
-            intArrayOf(empty, empty, 8, 6, empty, empty, empty, empty, 1),
-            intArrayOf(empty, 2, empty, empty, empty, 7, empty, 5, empty),
-            intArrayOf(empty, empty, 3, 7, empty, 5, empty, 2, 8),
-            intArrayOf(empty, 8, empty, empty, 6, empty, 7, empty, empty),
-            intArrayOf(2, empty, 7, empty, 8, 3, 6, 1, 5)
-        )
+        val arrField = PLAYFIELD_3_EMPTY_V2
         field = SudokuField(arrField)
         solver = SudokuSolver(field)
     }

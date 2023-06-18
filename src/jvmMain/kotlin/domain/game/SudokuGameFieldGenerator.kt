@@ -1,4 +1,7 @@
-package domain
+package domain.game
+
+import domain.solver.SudokuSolver
+import domain.entities.SudokuField
 
 /**
  * a sudoku generator for a classical sudoku extending an abstract sudoku.
@@ -12,7 +15,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to check
      * @return if the falue can be found
      */
-    override fun checkForObvious(x: Int, y: Int, `val`: Int): Boolean {
+    public override fun checkForObvious(x: Int, y: Int, `val`: Int): Boolean {
         return possibles[y][x].size == 1 ||
                 checkForObviousColumn(x, `val`) ||
                 checkForObviousRow(y, `val`) ||
@@ -26,7 +29,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in column of possibles
      */
-    protected fun checkForObviousColumn(x: Int, `val`: Int): Boolean {
+    fun checkForObviousColumn(x: Int, `val`: Int): Boolean {
         var found = false
         for (y in 0 until field.COLLIN) {
             if (possibles[y][x].contains(`val`)) {
@@ -43,7 +46,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in row of possibles
      */
-    protected fun checkForObviousRow(y: Int, `val`: Int): Boolean {
+    fun checkForObviousRow(y: Int, `val`: Int): Boolean {
         // counts how often val is a possible Value in the row (if its exactly one, that
         // solution can be easily found by the user
         var found = false
@@ -64,7 +67,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in box of possibles
      */
-    protected fun checkForObviousBox(x: Int, y: Int, `val`: Int): Boolean {
+    fun checkForObviousBox(x: Int, y: Int, `val`: Int): Boolean {
         var found = false
         val xb = x - x % field.BOXPERCOLLIN
         val yb = y - y % field.BOXPERCOLLIN
@@ -87,7 +90,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @return if input value in generelly possible by the classical rules
      */
     override fun checkValidInput(x: Int, y: Int, `val`: Int): Boolean {
-        return SudokuSolver.Companion.checkValidInput(
+        return SudokuSolver.checkValidInput(
             x = x,
             y = y,
             field = field,
