@@ -68,7 +68,7 @@ public abstract class AbstractSudokuGameFieldGenerator {
 	/**
 	 * helper function which provides all possibel values for all fields
 	 */
-    private void analyzeField() {
+    protected void analyzeField() {
         for (int y = 0; y < field.COLLIN; y++) {
             for (int x = 0; x < field.COLLIN; x++) {
                 possibles[y][x].clear();

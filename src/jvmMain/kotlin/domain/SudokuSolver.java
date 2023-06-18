@@ -20,7 +20,7 @@ public class SudokuSolver extends AbstractSudokuSolver{
      * @param val: value which should be checked
      * @return if value can be set without violating the classical rules
      */
-	boolean checkValidInput(int x, int y, int val) {
+	protected boolean checkValidInput(int x, int y, int val) {
     	return checkValidInput(x, y, field, val);
     }
 

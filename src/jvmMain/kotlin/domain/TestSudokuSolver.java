@@ -1,18 +1,14 @@
-package Tests;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import SudokuField;
-import SudokuSolver;
 
 class TestSudokuSolver {
 	
-	SudokuSolver solver;
 	SudokuField field;
+	SudokuSolver solver;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -31,13 +27,42 @@ class TestSudokuSolver {
 		
 		
 		field = new SudokuField(arrField);
-		solver = new SudokuSolver(field);
+		solver = new SudokuSolver(arrField);
 	}
-
+	
 	@Test
 	void testCheckLine() {
 		assertTrue(SudokuSolver.checkLine(0, field, 5));
 		assertFalse(SudokuSolver.checkLine(1, field, 7));
 	}
+	
+	@Test
+	void testCheckColumn() {
+		assertTrue(SudokuSolver.checkColumn(3, field, 9));
+		assertFalse(SudokuSolver.checkColumn(4, field, 5));
+	}	
+	
+	@Test
+	void testCheckBox() {
+		assertTrue(SudokuSolver.checkBox(0,2, field, 6));
+		assertFalse(SudokuSolver.checkBox(0,2, field, 1));
+	}
+	
+	@Test
+	void testCheckValidInput() {
+		assertTrue(SudokuSolver.checkValidInput(0,2, field, 7));
+		assertFalse(SudokuSolver.checkValidInput(0,2, field, 5));
+	}
+
+	@Test
+	void testSolver() {
+		solver.solve();
+		for (int y = 0; y < field.COLLIN; y++) {
+			for (int x = 0; x < field.COLLIN; x++) {
+				assertFalse(field.compareValue(x, y, SudokuField.EMPTY));
+			}
+		}
+	}
+	
 }
 	

@@ -36,7 +36,7 @@ public class SudokuGameFieldGenerator extends AbstractSudokuGameFieldGenerator{
      * @param val: value to be checked
      * @return boolean if value can be found only one time in column of possibles
      */
-    private boolean checkForObviousColumn(int x, int val) {
+	protected boolean checkForObviousColumn(int x, int val) {
     	boolean found = false;
     	for (int y = 0; y < field.COLLIN; y++) {
             if (possibles[y][x].contains(val)) {
@@ -54,7 +54,7 @@ public class SudokuGameFieldGenerator extends AbstractSudokuGameFieldGenerator{
      * @param val: value to be checked
      * @return boolean if value can be found only one time in row of possibles
      */
-    private boolean checkForObviousRow(int y, int val) {
+	protected boolean checkForObviousRow(int y, int val) {
         // counts how often val is a possible Value in the row (if its exactly one, that
         // solution can be easily found by the user
     	boolean found = false;
@@ -76,7 +76,7 @@ public class SudokuGameFieldGenerator extends AbstractSudokuGameFieldGenerator{
      * @param val: value to be checked
      * @return boolean if value can be found only one time in box of possibles
      */
-    private boolean checkForObviousBox(int x, int y, int val) {
+    boolean checkForObviousBox(int x, int y, int val) {
     	boolean found = false;
         int xb = x - (x % field.BOXPERCOLLIN);
         int yb = y - (y % field.BOXPERCOLLIN);
