@@ -69,7 +69,7 @@ abstract class AbstractSudokuGameFieldGenerator(protected var field: SudokuField
     /**
      * helper function which provides all possibel values for all fields
      */
-    private fun analyzeField() {
+    protected fun analyzeField() {
         for (y in 0 until field.COLLIN) {
             for (x in 0 until field.COLLIN) {
                 possibles[y][x].clear()

@@ -26,7 +26,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in column of possibles
      */
-    private fun checkForObviousColumn(x: Int, `val`: Int): Boolean {
+    protected fun checkForObviousColumn(x: Int, `val`: Int): Boolean {
         var found = false
         for (y in 0 until field.COLLIN) {
             if (possibles[y][x].contains(`val`)) {
@@ -43,7 +43,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in row of possibles
      */
-    private fun checkForObviousRow(y: Int, `val`: Int): Boolean {
+    protected fun checkForObviousRow(y: Int, `val`: Int): Boolean {
         // counts how often val is a possible Value in the row (if its exactly one, that
         // solution can be easily found by the user
         var found = false
@@ -64,7 +64,7 @@ open class SudokuGameFieldGenerator(field: SudokuField) : AbstractSudokuGameFiel
      * @param val: value to be checked
      * @return boolean if value can be found only one time in box of possibles
      */
-    private fun checkForObviousBox(x: Int, y: Int, `val`: Int): Boolean {
+    protected fun checkForObviousBox(x: Int, y: Int, `val`: Int): Boolean {
         var found = false
         val xb = x - x % field.BOXPERCOLLIN
         val yb = y - y % field.BOXPERCOLLIN

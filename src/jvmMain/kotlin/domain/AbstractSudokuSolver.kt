@@ -32,7 +32,7 @@ abstract class  AbstractSudokuSolver
      */
     fun solve(): Boolean {
         var entries: List<Int>
-        for (i_y in 1 until field.COLLIN) { //for each line
+        for (i_y in 0 until field.COLLIN) { //for each line
             entries = IntStream.rangeClosed(1, field.COLLIN).boxed()
                 .collect(Collectors.toList()) //this function create a list of all the allowed input numbers
             Collections.shuffle(entries)
